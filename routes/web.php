@@ -22,6 +22,10 @@ Route::get('/dashboardtest', function () {
     return view('testing');
 });
 
+Route::get('/manhour', function () {
+    return view('manhour');
+});
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
