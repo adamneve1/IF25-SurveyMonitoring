@@ -25,6 +25,9 @@ Route::get('/dashboardtest', function () {
 Route::get('/manhour', function () {
     return view('manhour');
 });
+Route::get('/input', function () {
+    return view('inputProyek');
+});
 
 Route::get('/dashboard', function () {
     return view('dashboard');
