@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id(); // ID proyek
             $table->string('nama_proyek'); // Nama proyek
             $table->string('alamat_proyek'); // Alamat proyek
+            $table->unsignedInteger('jumlah_manpower');
             $table->enum('status', ['belum_mulai', 'berjalan', 'batal', 'selesai']); // Status proyek
             $table->date('tanggal_mulai'); // Tanggal mulai proyek
             $table->date('estimasi_selesai'); // Estimasi selesai proyek
