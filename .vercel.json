@@ -5,5 +5,6 @@
             "use": "@vercel/php"
         }
     ],
-    "routes": [{ "src": "/(.*)", "dest": "public/index.php" }]
+    "routes": [{ "src": "/(.*)", "dest": "public/index.php" }],
+    "outputDirectory": "public"
 }
