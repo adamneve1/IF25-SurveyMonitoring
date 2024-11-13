@@ -1,1 +1,14 @@
-{ "rewrites": [{ "source": "/(.*)", "destination": "/" }] }
+{
+    "version": 2,
+    "builds": [
+        { "src": "public/**", "use": "@vercel/static" },
+        { "src": "api/index.php", "use": "vercel-php@0.5.0" }
+    ],
+    "routes": [
+        {
+            "src": "/(css|js|images|fonts|favicon.ico)/(.*)",
+            "dest": "public/$1/$2"
+        },
+        { "src": "/(.*)", "dest": "public/index.php" }
+    ]
+}
