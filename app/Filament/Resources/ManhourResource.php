@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
 
 class ManhourResource extends Resource
 {
@@ -25,7 +26,7 @@ class ManhourResource extends Resource
                     ->relationship('proyek', 'nama_proyek') 
                     ->required(),
                 Forms\Components\Select::make('manpower_idl_id')
-                    ->relationship('manpower_idl', 'nama') 
+                    ->relationship('manpower_idl', 'nama')
                     ->required()
                     ->label('Manpower IDL'),
                 Forms\Components\TextInput::make('manpower_dl')
