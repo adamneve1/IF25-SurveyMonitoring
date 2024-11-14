@@ -19,6 +19,9 @@ class ManpowerIdlResource extends Resource
 
     protected static ?string $navigationLabel = 'Manpower IDL';
     protected static ?string $navigationIcon = 'heroicon-s-identification';
+    protected static ?string $label = 'Manpower IDL';
+    protected static ?string $navigationGroup = 'Kelola';
+    
 
     public static function form(Form $form): Form
     {
