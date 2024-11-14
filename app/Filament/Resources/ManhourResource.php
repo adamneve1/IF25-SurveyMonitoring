@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ManhourResource\Pages;
-use App\Filament\Resources\ManhourResource\RelationManagers;
 use App\Models\Manhour;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -25,16 +24,32 @@ class ManhourResource extends Resource
                 Forms\Components\Select::make('proyek_id')
                     ->relationship('proyek', 'nama_proyek') 
                     ->required(),
-                Forms\Components\DatePicker::make('tanggal')->required(),
-                Forms\Components\TextInput::make('jumlah_tenaga_langsung')
-                    ->numeric()
+                Forms\Components\DatePicker::make('tanggal')
                     ->required(),
-                Forms\Components\TextInput::make('jumlah_tenaga_tidak_langsung')
+                Forms\Components\TextInput::make('overtime')
                     ->numeric()
-                    ->required(),
-                Forms\Components\TextInput::make('total_jam')
+                    ->required()
+                    ->label('Overtime Hours'),
+                Forms\Components\TextInput::make('manpower_id')
                     ->numeric()
-                    ->required(),
+                    ->required()
+                    ->label('Manpower ID'),
+                Forms\Components\TextInput::make('pic')
+                    ->required()
+                    ->label('PIC (Person in Charge)'),
+                Forms\Components\Select::make('devisi')
+                    ->options([
+                        'pgmt' => 'PGMT',
+                        'hvac' => 'HVAC',
+                        'qa.qc' => 'QA/QC',
+                        'piping' => 'Piping',
+                        'scaffolder' => 'Scaffolder',
+                        'structure' => 'Structure',
+                        'architectural' => 'Architectural',
+                        'civil' => 'Civil',
+                    ])
+                    ->required()
+                    ->label('Devisi'),
             ]);
     }
 
@@ -44,15 +59,19 @@ class ManhourResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('proyek.nama_proyek')->label('Proyek'),
                 Tables\Columns\TextColumn::make('tanggal')->date(),
-                Tables\Columns\TextColumn::make('jumlah_tenaga_langsung'),
-                Tables\Columns\TextColumn::make('jumlah_tenaga_tidak_langsung'),
-                Tables\Columns\TextColumn::make('total_jam'),
+                Tables\Columns\TextColumn::make('overtime')->label('Overtime Hours'),
+                Tables\Columns\TextColumn::make('manpower_id')->label('Manpower ID'),
+                Tables\Columns\TextColumn::make('pic')->label('PIC'),
+                Tables\Columns\TextColumn::make('devisi')->label('Devisi'),
             ])
             ->filters([
-                
+                // Add any filters you need here
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->modalHeading('Edit Manhour') // Edit action with modal
+                    ->modalButton('Update')
+                    ->label('Edit'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -64,7 +83,7 @@ class ManhourResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            // Define relationships here if needed
         ];
     }
 

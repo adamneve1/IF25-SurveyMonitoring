@@ -13,26 +13,25 @@ class ManhourChart extends ChartWidget
 
     protected function getData(): array
     {
-        $dataLangsung = Trend::model(Manhour::class)
+        // Sum overtime hours per month
+        $dataOvertime = Trend::model(Manhour::class)
             ->between(
                 start: now()->startOfYear(),
                 end: now()->endOfYear(),
             )
             ->perMonth()
-            ->sum('total_jam');
-
-        
+            ->sum('overtime');
 
         return [
             'datasets' => [
                 [
                     'label' => 'Jumlah Manhours',
-                    'data' => $dataLangsung->map(fn (TrendValue $value) => $value->aggregate),
+                    'data' => $dataOvertime->map(fn (TrendValue $value) => $value->aggregate),
                     'borderColor' => '#4CAF50',
+                    'backgroundColor' => '#4CAF50',
                 ],
-             
             ],
-            'labels' => $dataLangsung->map(fn (TrendValue $value) => Carbon::parse($value->date)->format('F')),
+            'labels' => $dataOvertime->map(fn (TrendValue $value) => Carbon::parse($value->date)->format('F')),
         ];
     }
 

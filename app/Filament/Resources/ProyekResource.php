@@ -35,6 +35,7 @@ class ProyekResource extends Resource
                     ->required(),
                 Forms\Components\DatePicker::make('tanggal_mulai')->required(),
                 Forms\Components\DatePicker::make('estimasi_selesai')->required(),
+                Forms\Components\TextInput::make('jumlah_manpower')->required(),
             ]);
     }
 

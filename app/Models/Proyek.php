@@ -19,6 +19,7 @@ class Proyek extends Model
         'status',
         'tanggal_mulai',
         'estimasi_selesai',
+        'jumlah_manpower', // Menambahkan jumlah_manpower ke fillable
     ];
 
     // Relasi satu proyek memiliki banyak manhours

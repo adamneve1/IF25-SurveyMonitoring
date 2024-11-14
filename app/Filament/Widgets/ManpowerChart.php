@@ -13,36 +13,24 @@ class ManpowerChart extends ChartWidget
 
     protected function getData(): array
     {
-        $dataLangsung = Trend::model(Manhour::class)
+        // Sum overtime hours per month
+        $dataOvertime = Trend::model(Manhour::class)
             ->between(
                 start: now()->startOfYear(),
                 end: now()->endOfYear(),
             )
             ->perMonth()
-            ->sum('jumlah_tenaga_langsung');
-
-        $dataTidakLangsung = Trend::model(Manhour::class)
-            ->between(
-                start: now()->startOfYear(),
-                end: now()->endOfYear(),
-            )
-            ->perMonth()
-            ->sum('jumlah_tenaga_tidak_langsung');
+            ->sum('overtime');
 
         return [
             'datasets' => [
                 [
-                    'label' => 'IDL',
-                    'data' => $dataLangsung->map(fn (TrendValue $value) => $value->aggregate),
+                    'label' => 'Overtime Hours',
+                    'data' => $dataOvertime->map(fn (TrendValue $value) => $value->aggregate),
                     'borderColor' => '#4CAF50',
                 ],
-                [
-                    'label' => 'DL',
-                    'data' => $dataTidakLangsung->map(fn (TrendValue $value) => $value->aggregate),
-                    'borderColor' => '#FF5722',
-                ],
             ],
-            'labels' => $dataLangsung->map(fn (TrendValue $value) => Carbon::parse($value->date)->format('F')),
+            'labels' => $dataOvertime->map(fn (TrendValue $value) => Carbon::parse($value->date)->format('F')),
         ];
     }
 
