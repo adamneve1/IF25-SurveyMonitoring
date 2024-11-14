@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('manpower_dls', function (Blueprint $table) {
+        Schema::create('manpower_idls', function (Blueprint $table) {
         $table->id(); // ID manpower
         $table->string('nama');
         });
@@ -22,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('manpower_dls');
+        Schema::dropIfExists('manpower_idls');
     }
 };

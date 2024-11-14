@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('manhours', function (Blueprint $table) {
             $table->id(); // ID manhour
             $table->foreignId('proyek_id')->constrained('proyeks')->cascadeOnDelete(); // Foreign key to proyeks table
-            $table->foreignId('manpower_dl_id')->constrained('manpower_dls')->cascadeOnDelete(); // Foreign key to manpower_dls table
-            $table->string('manpower_idl');
+            $table->foreignId('manpower_idl_id')->constrained('manpower_idls')->cascadeOnDelete(); // Foreign key to manpower_dls table
+            $table->string('manpower_dl');
             $table->string('pic');
             $table->date('tanggal'); // Date for manhour data entry
             $table->unsignedInteger('overtime'); // Total overtime hours

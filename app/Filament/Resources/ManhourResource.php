@@ -24,16 +24,19 @@ class ManhourResource extends Resource
                 Forms\Components\Select::make('proyek_id')
                     ->relationship('proyek', 'nama_proyek') 
                     ->required(),
+                Forms\Components\Select::make('manpower_idl_id')
+                    ->relationship('manpower_idl', 'nama') 
+                    ->required()
+                    ->label('Manpower IDL'),
+                Forms\Components\TextInput::make('manpower_dl')
+                    ->required()
+                    ->label('Manpower DL'),
                 Forms\Components\DatePicker::make('tanggal')
                     ->required(),
                 Forms\Components\TextInput::make('overtime')
                     ->numeric()
                     ->required()
                     ->label('Overtime Hours'),
-                Forms\Components\TextInput::make('manpower_id')
-                    ->numeric()
-                    ->required()
-                    ->label('Manpower ID'),
                 Forms\Components\TextInput::make('pic')
                     ->required()
                     ->label('PIC (Person in Charge)'),
@@ -58,9 +61,10 @@ class ManhourResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('proyek.nama_proyek')->label('Proyek'),
+                Tables\Columns\TextColumn::make('manpower_idl.nama')->label('Manpower IDL'),
+                Tables\Columns\TextColumn::make('manpower_dl')->label('Manpower DL'),
                 Tables\Columns\TextColumn::make('tanggal')->date(),
                 Tables\Columns\TextColumn::make('overtime')->label('Overtime Hours'),
-                Tables\Columns\TextColumn::make('manpower_id')->label('Manpower ID'),
                 Tables\Columns\TextColumn::make('pic')->label('PIC'),
                 Tables\Columns\TextColumn::make('devisi')->label('Devisi'),
             ])

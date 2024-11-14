@@ -5,12 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Manpower_dl extends Model
+class Manpower_idl extends Model
 {
     use HasFactory;
+    public $timestamps = false;
 
     // Tentukan nama tabel yang digunakan model ini
-    protected $table = 'manpower_dls';
+    protected $table = 'manpower_idls';
 
     // Tentukan kolom yang dapat diisi secara massal
     protected $fillable = [

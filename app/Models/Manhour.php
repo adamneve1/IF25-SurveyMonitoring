@@ -15,8 +15,8 @@ class Manhour extends Model
     // Tentukan kolom yang dapat diisi secara massal
     protected $fillable = [
         'proyek_id',
-        'manpower_dl_id',
-        'manpower_idl',
+        'manpower_idl_id',
+        'manpower_dl',
         'pic',
         'tanggal',
         'overtime',
@@ -28,8 +28,8 @@ class Manhour extends Model
     {
         return $this->belongsTo(Proyek::class, 'proyek_id');
     }
-    public function manpower_dl()
+    public function manpower_idl()
     {
-        return $this->belongsTo(Manpower_dl::class, 'manpower_dls_id');
+        return $this->belongsTo(Manpower_idl::class, 'manpower_idls_id');
     }
 }
