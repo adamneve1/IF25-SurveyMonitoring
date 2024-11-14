@@ -5,21 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Proyek extends Model
+class Manpower_dl extends Model
 {
     use HasFactory;
 
     // Tentukan nama tabel yang digunakan model ini
-    protected $table = 'proyeks';
+    protected $table = 'manpower_dls';
 
     // Tentukan kolom yang dapat diisi secara massal
     protected $fillable = [
-        'nama_proyek',
-        'alamat_proyek',
-        'jumlah_manpower',
-        'status',
-        'tanggal_mulai',
-        'estimasi_selesai',
+        'nama' // Menambahkan jumlah_manpower ke fillable
     ];
 
     // Relasi satu proyek memiliki banyak manhours
