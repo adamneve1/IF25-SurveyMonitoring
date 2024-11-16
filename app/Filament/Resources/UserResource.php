@@ -13,6 +13,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash; // Import Hash
+use Filament\Forms\Components\TextInput;
+
 
 class UserResource extends Resource
 {
@@ -21,26 +23,31 @@ class UserResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-wrench';
     protected static ?string $navigationLabel = 'Kelola Akun';
 
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->nullable() // Mengizinkan password kosong saat mengedit
-                    ->maxLength(255),
-                Forms\Components\Toggle::make('is_admin')
-                    ->label('Admin')
-                    ->default(false),
-            ]);
-    }
+public static function form(Form $form): Form
+{
+    return $form
+        ->schema([
+            Forms\Components\TextInput::make('name')
+                ->required()
+                ->maxLength(255),
+            Forms\Components\TextInput::make('email')
+                ->email()
+                ->required()
+                ->maxLength(255),
+            Forms\Components\TextInput::make('password')
+                ->password()
+                ->nullable() 
+                ->maxLength(255)
+                ->dehydrateStateUsing(fn ($state) => filled($state) ? Hash::make($state) : $state) // Hash kalo ga kosong
+                ->dehydrated(fn ($state) => filled($state)) // kesave kalo terisi
+                ->required(fn (string $context): bool => $context === 'create'), 
+            Forms\Components\Toggle::make('is_admin')
+                ->label('Admin')
+                ->default(false),
+        ]);
+}
+
+  
 
     public static function table(Table $table): Table
     {
@@ -93,12 +100,6 @@ class UserResource extends Resource
         ];
     }
 
-    public static function afterSave($record, $data): void
-    {
-        // Hanya hash password jika ada password baru
-        if (!empty($data['password'])) {
-            $record->password = Hash::make($data['password']);
-            $record->save();
-        }
+  
     }
-}
+    
