@@ -29,9 +29,10 @@ class ProyekResource extends Resource
                 Forms\Components\TextInput::make('alamat_proyek')->required(),
                 Forms\Components\Select::make('status')
                     ->options([
-                        'Berjalan' => 'Berjalan',
-                        'Terhambat' => 'Terhambat',
-                        'Berhasil' => 'Berhasil',
+                        'berjalan' => 'Berjalan',
+                        'batal' => 'Batal',
+                        'belum_mulai' => 'Belum Mulai',
+                        'selesai' => 'Selesai'
                     ])
                     ->required(),
                 Forms\Components\DatePicker::make('tanggal_mulai')->required(),
