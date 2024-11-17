@@ -64,10 +64,22 @@ class ManhourResource extends Resource
                 Tables\Columns\TextColumn::make('proyek.nama_proyek')->label('Proyek'),
                 Tables\Columns\TextColumn::make('manpower_idl.nama')->label('Manpower IDL'),
                 Tables\Columns\TextColumn::make('manpower_dl')->label('Manpower DL'),
-                Tables\Columns\TextColumn::make('tanggal')->date(),
+                Tables\Columns\TextColumn::make('tanggal')->date()->sortable(),
                 Tables\Columns\TextColumn::make('overtime')->label('Overtime Hours'),
                 Tables\Columns\TextColumn::make('pic')->label('PIC'),
-                Tables\Columns\TextColumn::make('devisi')->label('Devisi'),
+                Tables\Columns\SelectColumn::make('devisi')->label('Devisi')
+                    ->options([
+                        'pgmt' => 'PGMT',
+                        'hvac' => 'HVAC',
+                        'qa.qc' => 'QA/QC',
+                        'piping' => 'Piping',
+                        'scaffolder' => 'Scaffolder',
+                        'structure' => 'Structure',
+                        'architectural' => 'Architectural',
+                        'civil' => 'Civil',
+                    ])
+                    ->selectablePlaceholder(false)
+                    ->sortable()
             ])
             ->filters([
                 // Add any filters you need here

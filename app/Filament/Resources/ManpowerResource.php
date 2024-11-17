@@ -50,8 +50,19 @@ class ManpowerResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('proyek.nama_proyek')->label('Nama Proyek'),
                 Tables\Columns\TextColumn::make('nama')->label('Manpower'),
-                Tables\Columns\TextColumn::make('devisi')->label('Devisi')
-                    ->sortable(),
+                Tables\Columns\SelectColumn::make('devisi')->label('Devisi')
+                    ->options([
+                        'pgmt' => 'PGMT',
+                        'hvac' => 'HVAC',
+                        'qa.qc' => 'QA/QC',
+                        'piping' => 'Piping',
+                        'scaffolder' => 'Scaffolder',
+                        'structure' => 'Structure',
+                        'architectural' => 'Architectural',
+                        'civil' => 'Civil',
+                    ])
+                    ->selectablePlaceholder(false)
+                    ->sortable()
             ])
             ->filters([
                 //
