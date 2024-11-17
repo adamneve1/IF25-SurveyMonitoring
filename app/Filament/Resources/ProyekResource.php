@@ -49,8 +49,8 @@ class ProyekResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama_proyek')->sortable(),
-                Tables\Columns\TextColumn::make('tanggal_mulai')->sortable(),
-                Tables\Columns\TextColumn::make('estimasi_selesai')->sortable(),
+                Tables\Columns\TextColumn::make('tanggal_mulai')->sortable()->date(),
+                Tables\Columns\TextColumn::make('estimasi_selesai')->sortable()->date(),
                 Tables\Columns\SelectColumn::make('status')
                     ->options([
                         'berjalan' => 'Berjalan',

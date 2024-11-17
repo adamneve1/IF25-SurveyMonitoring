@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\Select;
 
 class ManhourResource extends Resource
 {
@@ -23,11 +24,13 @@ class ManhourResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('proyek_id')
-                    ->relationship('proyek', 'nama_proyek') 
+                    ->relationship('proyek', 'nama_proyek')
+                    ->native(false)
                     ->required(),
                 Forms\Components\Select::make('manpower_idl_id')
                     ->relationship('manpower_idl', 'nama')
                     ->required()
+                    ->native(false)
                     ->label('Manpower IDL'),
                 Forms\Components\TextInput::make('manpower_dl')
                     ->required()
@@ -53,6 +56,7 @@ class ManhourResource extends Resource
                         'civil' => 'Civil',
                     ])
                     ->required()
+                    ->native(false)
                     ->label('Devisi'),
             ]);
     }
@@ -61,12 +65,12 @@ class ManhourResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('proyek.nama_proyek')->label('Proyek'),
-                Tables\Columns\TextColumn::make('manpower_idl.nama')->label('Manpower IDL'),
+                Tables\Columns\TextColumn::make('proyek.nama_proyek')->label('Proyek')->sortable(),
+                Tables\Columns\TextColumn::make('manpower_idl.nama')->label('Manpower IDL')->sortable(),
                 Tables\Columns\TextColumn::make('manpower_dl')->label('Manpower DL'),
                 Tables\Columns\TextColumn::make('tanggal')->date()->sortable(),
                 Tables\Columns\TextColumn::make('overtime')->label('Overtime Hours'),
-                Tables\Columns\TextColumn::make('pic')->label('PIC'),
+                Tables\Columns\TextColumn::make('pic')->label('PIC')->sortable(),
                 Tables\Columns\SelectColumn::make('devisi')->label('Devisi')
                     ->options([
                         'pgmt' => 'PGMT',

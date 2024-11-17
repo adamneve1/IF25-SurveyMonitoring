@@ -24,7 +24,8 @@ class ManpowerResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('proyek_id')
-                    ->relationship('proyek', 'nama_proyek') 
+                    ->relationship('proyek', 'nama_proyek')
+                    ->native(false)
                     ->required(),
                 Forms\Components\TextInput::make('nama')
                     ->required(),
@@ -40,6 +41,7 @@ class ManpowerResource extends Resource
                         'civil' => 'Civil',
                     ])
                     ->required()
+                    ->native(false)
                     ->label('Devisi'),
             ]);
     }
