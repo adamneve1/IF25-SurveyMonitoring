@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Columns\TextColumn;
 
 class ManpowerIdlResource extends Resource
 {
@@ -38,7 +39,8 @@ class ManpowerIdlResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')->label('ID'),
-                Tables\Columns\TextColumn::make('nama')->label('Manpower IDL'),
+                Tables\Columns\TextColumn::make('nama')->label('Manpower IDL')
+                    ->sortable(),
             ])
             ->filters([
                 //
