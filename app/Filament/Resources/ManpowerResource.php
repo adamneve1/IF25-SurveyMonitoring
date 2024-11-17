@@ -48,9 +48,8 @@ class ManpowerResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')->label('ID'),
                 Tables\Columns\TextColumn::make('proyek.nama_proyek')->label('Nama Proyek'),
-                Tables\Columns\TextColumn::make('nama')->label('Manpower IDL'),
+                Tables\Columns\TextColumn::make('nama')->label('Manpower'),
                 Tables\Columns\TextColumn::make('devisi')->label('Devisi')
                     ->sortable(),
             ])
