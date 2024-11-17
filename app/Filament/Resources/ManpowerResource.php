@@ -51,6 +51,8 @@ class ManpowerResource extends Resource
                 Tables\Columns\TextColumn::make('id')->label('ID'),
                 Tables\Columns\TextColumn::make('proyek.nama_proyek')->label('Nama Proyek'),
                 Tables\Columns\TextColumn::make('nama')->label('Manpower IDL'),
+                Tables\Columns\TextColumn::make('devisi')->label('Devisi')
+                    ->sortable(),
             ])
             ->filters([
                 //

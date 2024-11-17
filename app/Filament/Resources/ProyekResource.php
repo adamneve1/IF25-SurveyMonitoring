@@ -6,6 +6,8 @@ use App\Filament\Resources\ProyekResource\Pages;
 use App\Filament\Resources\ProyekResource\RelationManagers;
 use App\Models\Proyek;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SelectColumn;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -34,6 +36,7 @@ class ProyekResource extends Resource
                         'belum_mulai' => 'Belum Mulai',
                         'selesai' => 'Selesai'
                     ])
+                    ->native(false)
                     ->required(),
                 Forms\Components\DatePicker::make('tanggal_mulai')->required(),
                 Forms\Components\DatePicker::make('estimasi_selesai')->required(),
@@ -55,6 +58,7 @@ class ProyekResource extends Resource
                         'belum_mulai' => 'Belum Mulai',
                         'selesai' => 'Selesai'
                     ])
+                    ->selectablePlaceholder(false)
                     ->sortable(),
             ])
             ->filters([
