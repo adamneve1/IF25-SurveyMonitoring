@@ -22,6 +22,10 @@ class ListProyeks extends ListRecords
     public function getTabs(): array
     {
         return [
+            'semua' => Tab::make('Semua')
+                ->modifyQueryUsing(function ($query) {
+                    return $query;
+                }),
             'belum_mulai' => Tab::make('Belum Mulai')
                 ->modifyQueryUsing(function ($query) {
                     return $query->where('status', 'belum_mulai');

@@ -23,6 +23,10 @@ class ListManhours extends ListRecords
     public function getTabs(): array
     {
         return [
+            'semua' => Tab::make('Semua')
+                ->modifyQueryUsing(function ($query) {
+                    return $query;
+                }),
             'pgmt' => Tab::make('PGMT')
                 ->modifyQueryUsing(function ($query) {
                     return $query->where('devisi', 'pgmt');
