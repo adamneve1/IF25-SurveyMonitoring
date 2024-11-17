@@ -30,6 +30,6 @@ class Manhour extends Model
     }
     public function manpower_idl()
     {
-        return $this->belongsTo(Manpower_idl::class, 'manpower_idls_id');
+        return $this->belongsTo(Manpower_idl::class, 'manpower_idl_id');
     }
 }
