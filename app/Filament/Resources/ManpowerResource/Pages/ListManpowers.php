@@ -38,9 +38,9 @@ class ListManpowers extends ListRecords
                 ->modifyQueryUsing(function ($query) {
                     return $query->where('devisi', 'qa.qc');
                 }),
-            'pipping' => Tab::make('Pipping')
+            'piping' => Tab::make('Pipping')
                 ->modifyQueryUsing(function ($query) {
-                    return $query->where('devisi', 'pipping');
+                    return $query->where('devisi', 'piping');
                 }),
             'scaffolder' => Tab::make('Scaffolder')
                 ->modifyQueryUsing(function ($query) {
