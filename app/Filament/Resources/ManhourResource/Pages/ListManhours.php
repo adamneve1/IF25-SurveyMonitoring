@@ -39,7 +39,7 @@ class ListManhours extends ListRecords
                 ->modifyQueryUsing(function ($query) {
                     return $query->where('devisi', 'qa.qc');
                 }),
-            'piping' => Tab::make('Pipping')
+            'piping' => Tab::make('Piping')
                 ->modifyQueryUsing(function ($query) {
                     return $query->where('devisi', 'piping');
                 }),
