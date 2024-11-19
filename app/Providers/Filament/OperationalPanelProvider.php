@@ -24,6 +24,7 @@ class OperationalPanelProvider extends PanelProvider
     {
         return $panel
             ->id('operational')
+            ->login()
             ->path('operational')
             ->colors([
                 'primary' => Color::Amber,
