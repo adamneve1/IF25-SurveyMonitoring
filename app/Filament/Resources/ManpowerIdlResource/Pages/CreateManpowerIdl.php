@@ -9,4 +9,11 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateManpowerIdl extends CreateRecord
 {
     protected static string $resource = ManpowerIdlResource::class;
+    protected function getRedirectUrl(): string
+    {
+        // Redirect ke halaman index
+        return $this->getResource()::getUrl('index');
+    }
 }
+
+

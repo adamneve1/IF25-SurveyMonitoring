@@ -16,4 +16,10 @@ class EditProyek extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+    protected function getRedirectUrl(): string
+    {
+        // Redirect ke halaman index
+        return $this->getResource()::getUrl('index');
+    }
 }
+

@@ -9,4 +9,10 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateProyek extends CreateRecord
 {
     protected static string $resource = ProyekResource::class;
+    protected function getRedirectUrl(): string
+    {
+        // Redirect ke halaman index
+        return $this->getResource()::getUrl('index');
+    }
 }
+

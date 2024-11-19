@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\ManpowerResource\Pages;
+namespace App\Filament\Operational\Resources\ManpowerResource\Pages;
 
-use App\Filament\Resources\ManpowerResource;
+use App\Filament\Operational\Resources\ManpowerResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
@@ -16,10 +16,5 @@ class EditManpower extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
-    protected function getRedirectUrl(): string
-    {
-        // Redirect ke halaman index
-        return $this->getResource()::getUrl('index');
-    }
+    
 }
-

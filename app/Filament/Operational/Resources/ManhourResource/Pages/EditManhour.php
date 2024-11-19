@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\ManhourResource\Pages;
+namespace App\Filament\Operational\Resources\ManhourResource\Pages;
 
-use App\Filament\Resources\ManhourResource;
+use App\Filament\Operational\Resources\ManhourResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
@@ -16,10 +16,4 @@ class EditManhour extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
-    protected function getRedirectUrl(): string
-    {
-        // Redirect ke halaman index
-        return $this->getResource()::getUrl('index');
-    }
 }
-
