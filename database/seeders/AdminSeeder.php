@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 
 class AdminSeeder extends Seeder
 {
-    // jalankan command 'php artisan db:seed --class=UserSeeder'
+    // jalankan command 'php artisan db:seed --class=AdminSeeder'
     public function run(): void
     {
         //Seeder admin email 'admin@lks.com' password: '1234'
