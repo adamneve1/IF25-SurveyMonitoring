@@ -11,7 +11,7 @@ class Manpower_dls extends Model
     public $timestamps = false;
 
     // Tentukan nama tabel yang digunakan model ini
-    protected $table = 'manpower_idls';
+    protected $table = 'manpower_dls';
 
     // Tentukan kolom yang dapat diisi secara massal
     protected $fillable = [
