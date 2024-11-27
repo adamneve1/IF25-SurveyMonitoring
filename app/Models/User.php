@@ -7,8 +7,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash; // Import Hash
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -52,11 +54,20 @@ class User extends Authenticatable
     public function setPasswordAttribute($value)
     {
         if (!empty($value)) {
-            
             $this->attributes['password'] = Hash::needsRehash($value) 
                 ? Hash::make($value) 
                 : $value;
         }
     }
-    
+
+    /**
+     * Determine if the user can access the given Filament panel.
+     *
+     * @param  Panel  $panel
+     * @return bool
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return str_ends_with($this->email, '@lks.com') && $this->hasVerifiedEmail();
+    }
 }
