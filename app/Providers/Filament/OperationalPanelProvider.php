@@ -29,6 +29,7 @@ class OperationalPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->darkMode(condition:false)
             ->discoverResources(in: app_path('Filament/Operational/Resources'), for: 'App\\Filament\\Operational\\Resources')
             ->discoverPages(in: app_path('Filament/Operational/Pages'), for: 'App\\Filament\\Operational\\Pages')
             ->pages([
