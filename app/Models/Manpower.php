@@ -10,7 +10,7 @@ class Manpower extends Model
     use HasFactory;
 
     // Tentukan nama tabel yang digunakan model ini
-    protected $table = 'Manpowers';
+    protected $table = 'manpowers';
     public $timestamps = false;
 
     // Tentukan kolom yang dapat diisi secara massal
