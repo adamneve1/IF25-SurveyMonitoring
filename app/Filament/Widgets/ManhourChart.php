@@ -14,6 +14,8 @@ class ManhourChart extends ChartWidget
 
     protected static ?string $heading = 'Manhour';
 
+    protected int | string | array  $columnSpan = 1 ;
+
     protected function getData(): array
     {
         $proyek = $this->filters['proyek'];
