@@ -6,18 +6,24 @@ use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 use App\Models\Manhour;
 use Carbon\Carbon;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class ManpowerChart extends ChartWidget
 {
+    use InteractsWithPageFilters;
+
     protected static ?string $heading = 'Manpower';
 
     protected function getData(): array
     {
-        // Sum overtime hours per month
+        $proyek = $this->filters['proyek'];
+        $start = $this->filters['start'];
+        $end = $this->filters['end'];
+        
         $dataOvertime = Trend::model(Manhour::class)
             ->between(
-                start: now()->startOfYear(),
-                end: now()->endOfYear(),
+                start: $start ? Carbon::parse($start) : now()->subMonths(6),
+                end: $end ? Carbon::parse($end) : now(),
             )
             ->perMonth()
             ->sum('overtime');

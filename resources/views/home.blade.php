@@ -335,7 +335,7 @@
 
 
 
-<!-- FOOTER -->
+<!-- FOOTER --
 <footer class="bg-[#091057] text-white py-8">
     <div class="container mx-auto px-4">
         <!-- Footer Grid -->

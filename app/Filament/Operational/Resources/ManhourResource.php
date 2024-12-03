@@ -3,15 +3,14 @@
 namespace App\Filament\Operational\Resources;
 
 use App\Filament\Operational\Resources\ManhourResource\Pages;
-use App\Filament\Operational\Resources\ManhourResource\RelationManagers;
 use App\Models\Manhour;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\SelectColumn;
 
 class ManhourResource extends Resource
 {
@@ -19,7 +18,6 @@ class ManhourResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-plus';
     protected static ?string $navigationLabel = 'Manhour';
-
 
     public static function form(Form $form): Form
     {
@@ -34,8 +32,10 @@ class ManhourResource extends Resource
                     ->required()
                     ->native(false)
                     ->label('Manpower IDL'),
-                Forms\Components\TextInput::make('manpower_dl')
+                Forms\Components\Select::make('manpower_dl_id')
+                    ->relationship('manpower_dl', 'nama')
                     ->required()
+                    ->native(false)
                     ->label('Manpower DL'),
                 Forms\Components\DatePicker::make('tanggal')
                     ->required(),
@@ -63,31 +63,24 @@ class ManhourResource extends Resource
             ]);
     }
 
-
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('proyek.nama_proyek')->label('Proyek')->sortable(),
-                Tables\Columns\TextColumn::make('manpower_idl.nama')->label('Manpower IDL')->sortable(),
-                Tables\Columns\TextColumn::make('manpower_dl')->label('Manpower DL'),
-                Tables\Columns\TextColumn::make('tanggal')->date()->sortable(),
-                Tables\Columns\TextColumn::make('overtime')->label('Overtime Hours'),
-                Tables\Columns\TextColumn::make('pic')->label('PIC')->sortable(),
-                Tables\Columns\TextColumn::make('devisi')->label('Divisi')->sortable(),
-                    
+                TextColumn::make('proyek.nama_proyek')->label('Proyek')->sortable(),
+                TextColumn::make('manpower_idl.nama')->label('Manpower IDL')->sortable(),
+                TextColumn::make('manpower_dl.nama')->label('Manpower DL')->sortable(),
+                TextColumn::make('tanggal')->date()->sortable(),
+                TextColumn::make('overtime')->label('Overtime Hours'),
+                TextColumn::make('pic')->label('PIC')->sortable(),
+                TextColumn::make('devisi')->label('Divisi')->sortable(),
             ])
             ->filters([
                 // Add any filters you need here
             ])
-            ->actions([]) // Tidak ada aksi edit
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->actions([]) // No actions (Edit action removed)
+            ->bulkActions([]); // No bulk actions (Delete action removed)
     }
-    
 
     public static function getRelations(): array
     {
@@ -101,7 +94,7 @@ class ManhourResource extends Resource
         return [
             'index' => Pages\ListManhours::route('/'),
             'create' => Pages\CreateManhour::route('/create'),
-            
+            // Remove 'edit' page so records can't be edited
         ];
     }
 }

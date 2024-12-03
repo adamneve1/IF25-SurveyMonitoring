@@ -29,15 +29,17 @@ class OperationalPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->darkMode(condition:false)
             ->discoverResources(in: app_path('Filament/Operational/Resources'), for: 'App\\Filament\\Operational\\Resources')
             ->discoverPages(in: app_path('Filament/Operational/Pages'), for: 'App\\Filament\\Operational\\Pages')
             ->pages([
                 Pages\Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Operational/Widgets'), for: 'App\\Filament\\Operational\\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                
             ])
             ->middleware([
                 EncryptCookies::class,

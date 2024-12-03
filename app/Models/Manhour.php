@@ -16,7 +16,7 @@ class Manhour extends Model
     protected $fillable = [
         'proyek_id',
         'manpower_idl_id',
-        'manpower_dl',
+        'manpower_dl_id',
         'pic',
         'tanggal',
         'overtime',
@@ -27,6 +27,10 @@ class Manhour extends Model
     public function proyek()
     {
         return $this->belongsTo(Proyek::class, 'proyek_id');
+    }
+    public function manpower_dl()
+    {
+        return $this->belongsTo(Manpower_dl::class, 'manpower_dl_id');
     }
     public function manpower_idl()
     {

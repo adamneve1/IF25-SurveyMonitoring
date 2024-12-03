@@ -5,22 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Manpower extends Model
+class Manpower_dl extends Model
 {
     use HasFactory;
+    public $timestamps = false;
 
     // Tentukan nama tabel yang digunakan model ini
-    protected $table = 'manpowers';
-    public $timestamps = false;
+    protected $table = 'manpower_dls';
 
     // Tentukan kolom yang dapat diisi secara massal
     protected $fillable = [
-        'proyek_id',
-        'nama',
-        'devisi'
+        'nama'
     ];
-    public function proyek()
+
+    public function manhours()
     {
-        return $this->belongsTo(Proyek::class, 'proyek_id');
+        return $this->hasMany(Manhour::class, 'proyek_id');
     }
 }

@@ -32,8 +32,10 @@ class ManhourResource extends Resource
                     ->required()
                     ->native(false)
                     ->label('Manpower IDL'),
-                Forms\Components\TextInput::make('manpower_dl')
+                Forms\Components\Select::make('manpower_dl_id')
+                    ->relationship('manpower_dl', 'nama')
                     ->required()
+                    ->native(false)
                     ->label('Manpower DL'),
                 Forms\Components\DatePicker::make('tanggal')
                     ->required(),
@@ -67,7 +69,7 @@ class ManhourResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('proyek.nama_proyek')->label('Proyek')->sortable(),
                 Tables\Columns\TextColumn::make('manpower_idl.nama')->label('Manpower IDL')->sortable(),
-                Tables\Columns\TextColumn::make('manpower_dl')->label('Manpower DL'),
+                Tables\Columns\TextColumn::make('manpower_dl.nama')->label('Manpower DL')->sortable(),
                 Tables\Columns\TextColumn::make('tanggal')->date()->sortable(),
                 Tables\Columns\TextColumn::make('overtime')->label('Overtime Hours'),
                 Tables\Columns\TextColumn::make('pic')->label('PIC')->sortable(),
