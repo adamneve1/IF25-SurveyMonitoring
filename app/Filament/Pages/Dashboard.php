@@ -21,7 +21,7 @@ class Dashboard extends \Filament\Pages\Dashboard
                 Select::make('proyek_id')
                     ->label('Nama Proyek')
                     ->placeholder('Semua Proyek')
-                    ->options(Proyek::pluck('nama_proyek', 'id'))
+                    ->options(Proyek::pluck('nama_proyek', 'id')->toArray())
                     ->searchable('Nama Proyek'),
                 DatePicker::make('start')
                     ->label('Start'),
