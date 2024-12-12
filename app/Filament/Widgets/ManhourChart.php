@@ -18,12 +18,16 @@ class ManhourChart extends ChartWidget
 
     protected function getData(): array
     {
-        $proyek = $this->filters['proyek'];
+        $proyek = $this->filters['proyek_id'] ?? null;
         $start = $this->filters['start'];
         $end = $this->filters['end'];
         
+        $query = Manhour::query();
 
-        // Sum overtime hours per month
+        if ($proyek) {
+            $query->where('proyek_id', $proyek);
+        }
+
         $dataOvertime = Trend::model(Manhour::class)
             ->between(
                 start: $start ? Carbon::parse($start) : now()->subMonths(6),
