@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('manpower_idls', function (Blueprint $table) {
         $table->id(); // ID manpower
+        $table->foreignId('proyek_id')->constrained('proyeks')->cascadeOnDelete();
         $table->string('nama');
         });
     }
