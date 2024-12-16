@@ -22,7 +22,7 @@ class AdminSeeder extends Seeder
             'remember_token' => null,
             'created_at' => now(),
             'updated_at' => now(),
-            'is_admin' => 0,
+            'is_admin' => 1,
         ]);
     }
 }
