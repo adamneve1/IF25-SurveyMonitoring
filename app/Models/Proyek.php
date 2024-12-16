@@ -9,10 +9,8 @@ class Proyek extends Model
 {
     use HasFactory;
 
-    // Tentukan nama tabel yang digunakan model ini
     protected $table = 'proyeks';
 
-    // Tentukan kolom yang dapat diisi secara massal
     protected $fillable = [
         'nama_proyek',
         'alamat_proyek',
@@ -22,9 +20,16 @@ class Proyek extends Model
         'estimasi_selesai',
     ];
 
-    // Relasi satu proyek memiliki banyak manhours
     public function manhours()
     {
         return $this->hasMany(Manhour::class, 'proyek_id');
+    }
+    public function manpowerdl()
+    {
+        return $this->hasMany(Manpower_dl::class, 'proyek_id');
+    }
+    public function manpoweridl()
+    {
+        return $this->hasMany(Manpower_idl::class, 'proyek_id');
     }
 }

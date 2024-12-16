@@ -12,10 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('manhours', function (Blueprint $table) {
-            $table->id(); // ID manhour
-            $table->foreignId('proyek_id')->constrained('proyeks')->cascadeOnDelete(); // Foreign key to proyeks table
+            $table->id(); 
+            $table->foreignId('proyek_id')->constrained('proyeks')->cascadeOnDelete();
             $table->foreignId('manpower_idl_id')->constrained('manpower_idls')->cascadeOnDelete();
             $table->foreignId('manpower_dl_id')->constrained('manpower_dls')->cascadeOnDelete();
+            $table->enum('jam_absen', ['pagi', 'siang', 'malam']);
             $table->string('pic');
             $table->date('tanggal');
             $table->unsignedInteger('overtime');
