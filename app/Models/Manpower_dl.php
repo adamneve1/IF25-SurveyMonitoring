@@ -10,13 +10,11 @@ class Manpower_dl extends Model
     use HasFactory;
     public $timestamps = false;
 
-    // Tentukan nama tabel yang digunakan model ini
     protected $table = 'manpower_dls';
 
-    // Tentukan kolom yang dapat diisi secara massal
     protected $fillable = [
+        'proyek_id',
         'nama',
-        'proyek_id'
     ];
 
     public function manhours()

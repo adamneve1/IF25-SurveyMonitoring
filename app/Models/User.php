@@ -70,8 +70,8 @@ class User extends Authenticatable implements FilamentUser
 {
     return match($panel->getId()) {
         default => false,
-        'admin' => $this->is_admin === 1, // Akses hanya jika is_admin = 1
-        'operational' => $this->is_admin === 0 || $this->is_admin === 1, // Akses jika is_admin = 0 atau 1
+        'admin' => $this->is_admin === 1,
+        'operational' => $this->is_admin === 0 || $this->is_admin === 1, 
     };
 }
 

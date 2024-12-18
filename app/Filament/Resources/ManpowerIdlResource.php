@@ -27,10 +27,14 @@ class ManpowerIdlResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
+            ->schema([  
                 Forms\Components\TextInput::make('nama')
                     ->required()
                     ->label('Nama Manpower IDL'),
+                Forms\Components\Select::make('proyek_id')
+                    ->relationship('proyek', 'nama_proyek')
+                    ->native(false)
+                    ->required(),
             ]);
     }
 
@@ -39,6 +43,8 @@ class ManpowerIdlResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama')->label('Manpower IDL')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('proyek.nama_proyek')->label('Proyek')
                     ->sortable(),
             ])
             ->filters([

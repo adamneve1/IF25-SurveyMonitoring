@@ -23,6 +23,6 @@ class Manpower_idl extends Model
     }
     public function proyek()
     {
-        return $this->belongsTo(Proyek::class, 'proyek_id');
+        return $this->belongsTo(Proyek::class);
     }
 }

@@ -19,3 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect('/operational');
 });
+Route::get('/home', function () {
+    return view('home');
+});
+

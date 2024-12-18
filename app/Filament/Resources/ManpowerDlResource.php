@@ -30,6 +30,10 @@ class ManpowerDlResource extends Resource
                 Forms\Components\TextInput::make('nama')
                     ->required()
                     ->label('Nama Manpower DL'),
+                Forms\Components\Select::make('proyek_id')
+                    ->relationship('proyek', 'nama_proyek')
+                    ->native(false)
+                    ->required(),
             ]);
     }
 
@@ -38,6 +42,8 @@ class ManpowerDlResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama')->label('Manpower DL')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('proyek.nama_proyek')->label('Proyek')
                     ->sortable(),
             ])
             ->filters([

@@ -3,9 +3,13 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ManhourResource\Pages;
+use App\Filament\Resources\Collection;
 use App\Models\Manhour;
+use App\Models\Manpower_idl;
+use App\Models\Manpower_dl;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -26,17 +30,35 @@ class ManhourResource extends Resource
                 Forms\Components\Select::make('proyek_id')
                     ->relationship('proyek', 'nama_proyek')
                     ->native(false)
+                    ->live()
                     ->required(),
+                Forms\Components\Select::make('jam_absen')
+                    ->native(false)
+                    ->options([
+                        'pagi' => 'Pagi',
+                        'siang' => 'Siang',
+                        'malam' => 'Malam',
+                    ])
+                    ->required()
+                    ->label('Jam Absen'),
                 Forms\Components\Select::make('manpower_idl_id')
-                    ->relationship('manpower_idl', 'nama')
                     ->required()
                     ->native(false)
-                    ->label('Manpower IDL'),
+                    ->label('Manpower IDL')
+                    ->reactive()
+                    ->searchable()
+                    ->options(fn(Get $get) => Manpower_idl::query()
+                        ->where('proyek_id', $get('proyek_id'))
+                        ->pluck('nama', 'id')),
                 Forms\Components\Select::make('manpower_dl_id')
-                    ->relationship('manpower_dl', 'nama')
                     ->required()
                     ->native(false)
-                    ->label('Manpower DL'),
+                    ->label('Manpower DL')
+                    ->reactive()
+                    ->searchable()
+                    ->options(fn(Get $get) => Manpower_dl::query()
+                        ->where('proyek_id', $get('proyek_id'))
+                        ->pluck('nama', 'id')),
                 Forms\Components\DatePicker::make('tanggal')
                     ->required(),
                 Forms\Components\TextInput::make('overtime')
@@ -68,7 +90,7 @@ class ManhourResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('proyek.nama_proyek')->label('Proyek')->sortable(),
-                Tables\Columns\TextColumn::make('manpower_idl.nama')->label('Manpower IDL')->sortable(),
+                // Tables\Columns\TextColumn::make('manpower_idl.nama')->label('Manpower IDL')->sortable(),
                 Tables\Columns\TextColumn::make('manpower_dl.nama')->label('Manpower DL')->sortable(),
                 Tables\Columns\TextColumn::make('tanggal')->date()->sortable(),
                 Tables\Columns\TextColumn::make('overtime')->label('Overtime Hours'),
