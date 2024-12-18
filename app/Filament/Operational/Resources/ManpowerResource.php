@@ -12,12 +12,45 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 
 class ManpowerResource extends Resource
 {
     protected static ?string $model = Manpower::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    public static function canCreate(): bool
+    {
+        return self::emailDomainCheck() && !self::isExcludedUser();
+    }
+
+    // Batasi akses Edit
+    public static function canEdit($record): bool
+    {
+        return self::emailDomainCheck() && !self::isExcludedUser();
+    }
+
+    // Batasi akses Delete
+    public static function canDelete($record): bool
+    {
+        return self::emailDomainCheck() && !self::isExcludedUser();
+    }
+
+    
+    protected static function emailDomainCheck(): bool
+    {
+        $userEmail = auth()->user()?->email;
+
+        return Str::endsWith($userEmail, '@lks.com');
+    }
+
+  
+    protected static function isExcludedUser(): bool
+    {
+        $userEmail = auth()->user()?->email;
+
+        return $userEmail === 'pras@lks.com';
+    }
 
     public static function form(Form $form): Form
     {

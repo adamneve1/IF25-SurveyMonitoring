@@ -24,15 +24,5 @@ class AdminSeeder extends Seeder
             'updated_at' => now(),
             'is_admin' => 1,
         ]);
-        DB::table('users')->insert([
-            'id' => 2,
-            'name' => 'Operational',
-            'email' => 'user@lks.com',
-            'password' => Hash::make('1234'),
-            'remember_token' => null,
-            'created_at' => now(),
-            'updated_at' => now(),
-            'is_admin' => 0,
-        ]);
     }
 }

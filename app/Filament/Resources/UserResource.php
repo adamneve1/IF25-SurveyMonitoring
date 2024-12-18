@@ -101,6 +101,16 @@ public static function form(Form $form): Form
             'edit' => Pages\EditUser ::route('/{record}/edit'),
         ];
     }
+    public static function canViewAny(): bool
+{
+    return !str_ends_with(auth()->user()->email, 'pras@lks.com'); // Hanya tampil jika email bukan @gmail.com
+}
+public static function shouldRegisterNavigation(): bool
+{
+    return !str_ends_with(auth()->user()->email, 'pras@lks.com'); // Resource hanya ditampilkan jika email bukan @gmail.com
+}
+
+
 
   
     }

@@ -3,16 +3,13 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProyekResource\Pages;
-use App\Filament\Resources\ProyekResource\RelationManagers;
 use App\Models\Proyek;
 use Filament\Forms;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\SelectColumn;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class ProyekResource extends Resource
 {
@@ -22,6 +19,39 @@ class ProyekResource extends Resource
     protected static ?string $navigationLabel = 'Proyek';
     protected static ?string $navigationGroup = 'Kelola';
 
+    // Batasi akses Create
+    public static function canCreate(): bool
+    {
+        return self::emailDomainCheck() && !self::isExcludedUser();
+    }
+
+    // Batasi akses Edit
+    public static function canEdit($record): bool
+    {
+        return self::emailDomainCheck() && !self::isExcludedUser();
+    }
+
+    // Batasi akses Delete
+    public static function canDelete($record): bool
+    {
+        return self::emailDomainCheck() && !self::isExcludedUser();
+    }
+
+    
+    protected static function emailDomainCheck(): bool
+    {
+        $userEmail = auth()->user()?->email;
+
+        return Str::endsWith($userEmail, '@lks.com');
+    }
+
+  
+    protected static function isExcludedUser(): bool
+    {
+        $userEmail = auth()->user()?->email;
+
+        return $userEmail === 'pras@lks.com';
+    }
 
     public static function form(Form $form): Form
     {
@@ -59,17 +89,21 @@ class ProyekResource extends Resource
                         'selesai' => 'Selesai'
                     ])
                     ->selectablePlaceholder(false)
-                    ->sortable(),
+                    ->sortable()
+                    ->disabled(fn () => self::isExcludedUser()),
             ])
             ->filters([
                 // Tambahkan filter jika perlu
             ])
             ->actions([
-              //  Tables\Actions\EditAction::make(), // Membuka halaman edit
-              Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(fn ($record) => self::isExcludedUser()),
+                Tables\Actions\DeleteAction::make()
+                    ->visible(fn ($record) => self::emailDomainCheck() && !self::isExcludedUser()),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\DeleteBulkAction::make()
+                    ->visible(fn () => self::emailDomainCheck() && !self::isExcludedUser()),
             ]);
     }
 

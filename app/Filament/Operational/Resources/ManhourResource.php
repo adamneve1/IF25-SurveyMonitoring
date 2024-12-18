@@ -11,6 +11,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\SelectColumn;
+use Illuminate\Support\Str;
+
 
 class ManhourResource extends Resource
 {
@@ -18,6 +20,39 @@ class ManhourResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-plus';
     protected static ?string $navigationLabel = 'Manhour';
+
+    public static function canCreate(): bool
+    {
+        return self::emailDomainCheck() && !self::isExcludedUser();
+    }
+
+    // Batasi akses Edit
+    public static function canEdit($record): bool
+    {
+        return self::emailDomainCheck() && !self::isExcludedUser();
+    }
+
+    // Batasi akses Delete
+    public static function canDelete($record): bool
+    {
+        return self::emailDomainCheck() && !self::isExcludedUser();
+    }
+
+    
+    protected static function emailDomainCheck(): bool
+    {
+        $userEmail = auth()->user()?->email;
+
+        return Str::endsWith($userEmail, '@lks.com');
+    }
+
+  
+    protected static function isExcludedUser(): bool
+    {
+        $userEmail = auth()->user()?->email;
+
+        return $userEmail === 'pras@lks.com';
+    }
 
     public static function form(Form $form): Form
     {

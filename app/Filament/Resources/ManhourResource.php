@@ -15,6 +15,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\Select;
+use Illuminate\Support\Str;
 
 class ManhourResource extends Resource
 {
@@ -22,6 +23,38 @@ class ManhourResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-plus';
     protected static ?string $navigationLabel = 'Manhour';
+    public static function canCreate(): bool
+    {
+        return self::emailDomainCheck() && !self::isExcludedUser();
+    }
+
+    // Batasi akses Edit
+    public static function canEdit($record): bool
+    {
+        return self::emailDomainCheck() && !self::isExcludedUser();
+    }
+
+    // Batasi akses Delete
+    public static function canDelete($record): bool
+    {
+        return self::emailDomainCheck() && !self::isExcludedUser();
+    }
+
+    
+    protected static function emailDomainCheck(): bool
+    {
+        $userEmail = auth()->user()?->email;
+
+        return Str::endsWith($userEmail, '@lks.com');
+    }
+
+  
+    protected static function isExcludedUser(): bool
+    {
+        $userEmail = auth()->user()?->email;
+
+        return $userEmail === 'pras@lks.com';
+    }
 
     public static function form(Form $form): Form
     {
@@ -107,22 +140,22 @@ class ManhourResource extends Resource
                         'civil' => 'Civil',
                     ])
                     ->selectablePlaceholder(false)
-                    ->sortable()
-            ])
-            ->filters([
-                // Add any filters you need here
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make()
-                    ->modalHeading('Edit Manhour') // Edit action with modal
-                    ->modalButton('Update')
-                    ->label('Edit'),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+                    ->sortable()->disabled(fn () => self::isExcludedUser()),
+                    
+                    ])
+                    ->filters([
+                        //
+                    ])
+                    ->actions([
+                        Tables\Actions\EditAction::make()
+                            ->visible(fn ($record) => self::isExcludedUser()),
+                        Tables\Actions\DeleteAction::make()
+                            ->visible(fn ($record) => self::emailDomainCheck() && !self::isExcludedUser()),
+                    ])
+                    ->bulkActions([
+                        Tables\Actions\DeleteBulkAction::make()
+                            ->visible(fn () => self::emailDomainCheck() && !self::isExcludedUser()),
+                    ]);
     }
 
     public static function getRelations(): array
