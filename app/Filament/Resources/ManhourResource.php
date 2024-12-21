@@ -16,6 +16,8 @@ use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\Select;
 use Illuminate\Support\Str;
+use Awcodes\TableRepeater\Components\TableRepeater;
+use Awcodes\TableRepeater\Header;
 
 class ManhourResource extends Resource
 {

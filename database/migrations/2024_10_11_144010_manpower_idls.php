@@ -15,6 +15,7 @@ return new class extends Migration
         $table->id();
         $table->foreignId('proyek_id')->constrained('proyeks')->cascadeOnDelete();
         $table->string('nama');
+        $table->enum('devisi', ['pgmt', 'hvac', 'qa.qc', 'piping', 'scaffolder', 'structure', 'architectural', 'civil']);
         });
     }
 
