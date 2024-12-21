@@ -83,9 +83,11 @@ class ManpowerResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('proyek.nama_proyek')
-                    ->label('Nama Proyek'),
+                    ->label('Nama Proyek')
+                    ->placeholder('Nama Proyek'),
                 Tables\Columns\TextColumn::make('nama')
-                    ->label('Manpower'),
+                    ->label('Manpower')
+                    ->placeholder('Nama Manpower'),
                 Tables\Columns\SelectColumn::make('devisi')
                     ->label('Devisi')
                     ->options([
@@ -98,6 +100,7 @@ class ManpowerResource extends Resource
                         'architectural' => 'Architectural',
                         'civil' => 'Civil',
                     ])
+                    ->placeholder('Devisi')
                     ->selectablePlaceholder(false)
                     ->sortable()
                     ->disabled(fn () => self::isExcludedUser()), // Nonaktifkan inline editing

@@ -57,7 +57,9 @@ class ProyekResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama_proyek')->required(),
+                Forms\Components\TextInput::make('nama_proyek')
+                    ->required()
+                    ->placeholder('Nama Proyek'),
                 Forms\Components\TextInput::make('alamat_proyek')->required(),
                 Forms\Components\Select::make('status')
                     ->options([
@@ -66,11 +68,18 @@ class ProyekResource extends Resource
                         'belum_mulai' => 'Belum Mulai',
                         'selesai' => 'Selesai'
                     ])
+                    ->placeholder('Status Proyek')
                     ->native(false)
                     ->required(),
-                Forms\Components\DatePicker::make('tanggal_mulai')->required(),
-                Forms\Components\DatePicker::make('estimasi_selesai')->required(),
-                Forms\Components\TextInput::make('jumlah_manpower')->required(),
+                Forms\Components\DatePicker::make('tanggal_mulai')
+                    ->required()
+                    ->placeholder('Tanggal Mulai Proyek'),
+                Forms\Components\DatePicker::make('estimasi_selesai')
+                    ->required()
+                    ->placeholder('Estimasi Selesai Proyek'),
+                Forms\Components\TextInput::make('jumlah_manpower')
+                    ->required()
+                    ->placeholder('Jumlah Manpower Pada Proyek'),
             ]);
     }
 

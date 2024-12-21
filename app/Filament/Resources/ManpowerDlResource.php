@@ -62,10 +62,13 @@ class ManpowerDlResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('nama')
                     ->required()
+                    ->placeholder('Nama Manpower DL')
                     ->label('Nama Manpower DL'),
                 Forms\Components\Select::make('proyek_id')
                     ->relationship('proyek', 'nama_proyek')
                     ->required()
+                    ->placeholder('Pilih Proyek')
+                    ->native(false)
                     ->label('Proyek'),
                 Forms\Components\Select::make('devisi')
                     ->options([
@@ -79,6 +82,7 @@ class ManpowerDlResource extends Resource
                         'civil' => 'Civil',
                     ])
                     ->required()
+                    ->placeholder('Devisi')
                     ->native(false)
                     ->label('Devisi'),
             ]);
@@ -88,12 +92,20 @@ class ManpowerDlResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nama')->label('Manpower DL')
-                    ->sortable()->disabled(fn () => self::isExcludedUser()),
-                    
+                Tables\Columns\TextColumn::make('nama')
+                    ->label('Manpower DL')
+                    ->sortable()
+                    ->disabled(fn () => self::isExcludedUser()),
+                Tables\Columns\TextColumn::make('proyek.nama_proyek')
+                    ->label('Proyek')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('devisi')
+                    ->label('Devisi')
+                    ->sortable(),
+
                     ])
                     ->filters([
-                        //
+                        
                     ])
                     ->actions([
                         Tables\Actions\EditAction::make()

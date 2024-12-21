@@ -31,15 +31,18 @@ public static function form(Form $form): Form
         ->schema([
             Forms\Components\TextInput::make('name')
                 ->required()
+                ->placeholder('Nama User')
                 ->maxLength(255),
             Forms\Components\TextInput::make('email')
                 ->email()
                 ->required()
+                ->placeholder('Email User')
                 ->maxLength(255),
             Forms\Components\TextInput::make('password')
                 ->password()
                 ->nullable() 
                 ->maxLength(255)
+                ->placeholder('Password User')
                 ->dehydrateStateUsing(fn ($state) => filled($state) ? Hash::make($state) : $state) // Hash kalo ga kosong
                 ->dehydrated(fn ($state) => filled($state)) // kesave kalo terisi
                 ->required(fn (string $context): bool => $context === 'create'), 

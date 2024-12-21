@@ -16,6 +16,7 @@ use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\Select;
 use Illuminate\Support\Str;
+use Filament\Forms\Components\DatePicker;
 use Awcodes\TableRepeater\Components\TableRepeater;
 use Awcodes\TableRepeater\Header;
 
@@ -66,6 +67,7 @@ class ManhourResource extends Resource
                     ->relationship('proyek', 'nama_proyek')
                     ->native(false)
                     ->live()
+                    ->placeholder('Pilih Proyek')
                     ->required(),
                 Forms\Components\Select::make('jam_absen')
                     ->native(false)
@@ -75,12 +77,14 @@ class ManhourResource extends Resource
                         'malam' => 'Malam',
                     ])
                     ->required()
+                    ->placeholder('Jam Absen')
                     ->label('Jam Absen'),
                 Forms\Components\Select::make('manpower_idl_id')
                     ->required()
                     ->native(false)
                     ->label('Manpower IDL')
                     ->reactive()
+                    ->placeholder('Manpower IDL')
                     ->searchable()
                     ->options(fn(Get $get) => Manpower_idl::query()
                         ->where('proyek_id', $get('proyek_id'))
@@ -90,18 +94,22 @@ class ManhourResource extends Resource
                     ->native(false)
                     ->label('Manpower DL')
                     ->reactive()
+                    ->placeholder('Manpower DL')
                     ->searchable()
                     ->options(fn(Get $get) => Manpower_dl::query()
                         ->where('proyek_id', $get('proyek_id'))
                         ->pluck('nama', 'id')),
                 Forms\Components\DatePicker::make('tanggal')
-                    ->required(),
+                    ->required()
+                    ->default(today()),
                 Forms\Components\TextInput::make('overtime')
                     ->numeric()
                     ->required()
+                    ->placeholder('Jam Overtime')
                     ->label('Overtime Hours'),
                 Forms\Components\TextInput::make('pic')
                     ->required()
+                    ->placeholder('Person In Charge')
                     ->label('PIC (Person in Charge)'),
                 Forms\Components\Select::make('devisi')
                     ->options([
@@ -115,6 +123,7 @@ class ManhourResource extends Resource
                         'civil' => 'Civil',
                     ])
                     ->required()
+                    ->placeholder('Devisi')
                     ->native(false)
                     ->label('Devisi'),
             ]);

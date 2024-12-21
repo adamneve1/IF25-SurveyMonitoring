@@ -67,7 +67,8 @@ class ManpowerIdlResource extends Resource
                     ->label('Nama Manpower IDL'),
                 Forms\Components\Select::make('proyek_id')
                     ->relationship('proyek', 'nama_proyek')
-                    ->required() // Menandakan bahwa proyek_id wajib diisi
+                    ->required()
+                    ->native(false)
                     ->label('Proyek'),
                 Forms\Components\Select::make('devisi')
                     ->options([
@@ -93,7 +94,16 @@ class ManpowerIdlResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('nama')->label('Manpower IDL')
                     ->sortable()
+                    ->placeholder('Manpower IDL')
                     ->disabled(fn () => self::isExcludedUser()),
+                Tables\Columns\TextColumn::make('proyek.nama_proyek')
+                    ->label('Proyek')
+                    ->placeholder('Nama Proyek')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('devisi')
+                    ->label('Devisi')
+                    ->placeholder('Devisi')
+                    ->sortable(),
                     
             ])
             ->filters([
