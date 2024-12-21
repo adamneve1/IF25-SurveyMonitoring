@@ -15,6 +15,7 @@ class Manpower_dl extends Model
     protected $fillable = [
         'proyek_id',
         'nama',
+        'devisi',
     ];
 
     public function manhours()

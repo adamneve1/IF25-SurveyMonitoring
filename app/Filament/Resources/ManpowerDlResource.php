@@ -65,8 +65,22 @@ class ManpowerDlResource extends Resource
                     ->label('Nama Manpower DL'),
                 Forms\Components\Select::make('proyek_id')
                     ->relationship('proyek', 'nama_proyek')
-                    ->required() // Menandakan bahwa proyek_id wajib diisi
-                    ->label('Proyek')
+                    ->required()
+                    ->label('Proyek'),
+                Forms\Components\Select::make('devisi')
+                    ->options([
+                        'pgmt' => 'PGMT',
+                        'hvac' => 'HVAC',
+                        'qa.qc' => 'QA/QC',
+                        'piping' => 'Piping',
+                        'scaffolder' => 'Scaffolder',
+                        'structure' => 'Structure',
+                        'architectural' => 'Architectural',
+                        'civil' => 'Civil',
+                    ])
+                    ->required()
+                    ->native(false)
+                    ->label('Devisi'),
             ]);
     }
 
