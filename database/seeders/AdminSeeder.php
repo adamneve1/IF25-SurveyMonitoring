@@ -26,7 +26,7 @@ class AdminSeeder extends Seeder
         ]);
         DB::table('users')->insert([
             'id' => 2,
-            'name' => 'Operasional',
+            'name' => 'user',
             'email' => 'user@lks.com',
             'password' => Hash::make('1234'),
             'remember_token' => null,
@@ -34,5 +34,17 @@ class AdminSeeder extends Seeder
             'updated_at' => now(),
             'is_admin' => 0,
         ]);
+        DB::table('users')->insert([
+            'id' => 3,
+            'name' => 'Pras',
+            'email' => 'pras@lks.com',
+            'password' => Hash::make('1234'),
+            'remember_token' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+            'is_admin' => 1,
+        ]);
+
+
     }
 }
