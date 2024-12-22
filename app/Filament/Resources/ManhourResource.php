@@ -19,6 +19,12 @@ use Illuminate\Support\Str;
 use Filament\Forms\Components\DatePicker;
 use Awcodes\TableRepeater\Components\TableRepeater;
 use Awcodes\TableRepeater\Header;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
+use Carbon\Carbon;
+use Filament\Tables\Filters\Filter;
 
 class ManhourResource extends Resource
 {
@@ -79,16 +85,16 @@ class ManhourResource extends Resource
                     ->required()
                     ->placeholder('Jam Absen')
                     ->label('Jam Absen'),
-                // Forms\Components\Select::make('manpower_idl_id')
-                //     ->required()
-                //     ->native(false)
-                //     ->label('Manpower IDL')
-                //     ->reactive()
-                //     ->placeholder('Manpower IDL')
-                //     ->searchable()
-                //     ->options(fn(Get $get) => Manpower_idl::query()
-                //         ->where('proyek_id', $get('proyek_id'))
-                //         ->pluck('nama', 'id')),
+                Forms\Components\Select::make('manpower_idl_id')
+                    ->required()
+                    ->native(false)
+                    ->label('Manpower IDL')
+                    ->reactive()
+                    ->placeholder('Manpower IDL')
+                    ->searchable()
+                    ->options(fn(Get $get) => Manpower_idl::query()
+                        ->where('proyek_id', $get('proyek_id'))
+                        ->pluck('nama', 'id')),
                 Forms\Components\Select::make('manpower_dl_id')
                     ->required()
                     ->native(false)
@@ -121,7 +127,7 @@ class ManhourResource extends Resource
                         'structure' => 'Structure',
                         'architectural' => 'Architectural',
                         'civil' => 'Civil',
-                    ])
+                        ])
                     ->required()
                     ->placeholder('Devisi')
                     ->native(false)
@@ -133,29 +139,47 @@ class ManhourResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('proyek.nama_proyek')->label('Proyek')->sortable(),
+                Tables\Columns\TextColumn::make('proyek.nama_proyek')
+                    ->label('Proyek')
+                    ->sortable(),
                 // Tables\Columns\TextColumn::make('manpower_idl.nama')->label('Manpower IDL')->sortable(),
-                Tables\Columns\TextColumn::make('manpower_dl.nama')->label('Manpower DL')->sortable(),
-                Tables\Columns\TextColumn::make('tanggal')->date()->sortable(),
-                Tables\Columns\TextColumn::make('overtime')->label('Overtime Hours'),
-                Tables\Columns\TextColumn::make('pic')->label('PIC')->sortable(),
-                Tables\Columns\SelectColumn::make('devisi')->label('Devisi')
-                    ->options([
-                        'pgmt' => 'PGMT',
-                        'hvac' => 'HVAC',
-                        'qa.qc' => 'QA/QC',
-                        'piping' => 'Piping',
-                        'scaffolder' => 'Scaffolder',
-                        'structure' => 'Structure',
-                        'architectural' => 'Architectural',
-                        'civil' => 'Civil',
-                    ])
-                    ->selectablePlaceholder(false)
-                    ->sortable()->disabled(fn () => self::isExcludedUser()),
-                    
+                Tables\Columns\TextColumn::make('manpower_dl.nama')
+                    ->label('Manpower DL')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('tanggal')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('overtime')
+                    ->label('Overtime Hours'),
+                Tables\Columns\TextColumn::make('pic')
+                    ->label('PIC')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('devisi')
+                    ->label('Devisi')
+                    ->sortable(),
                     ])
                     ->filters([
-                        //
+                        SelectFilter::make('proyek_id')
+                            ->label('Filter By Proyek')
+                            ->relationship('proyek', 'nama_proyek')
+                            ->preload()
+                            ->indicator('Proyek'),
+                            Filter::make('tanggal')
+                        ->form([
+                            DatePicker::make('tanggal')
+                                ->placeholder('Pilih Tanggal')
+                            ])
+                            ->query(function ($query, array $data) {
+                                if (!empty($data['tanggal'])) {
+                                    $query->whereDate('tanggal', $data['tanggal']);
+                                }
+                            })
+                            ->indicateUsing(function (array $data): ?string {
+                                if (empty($data['tanggal'])) {
+                                    return null;
+                                }
+                                return 'Tanggal: ' . Carbon::parse($data['tanggal'])->toFormattedDateString();
+                            }),
                     ])
                     ->actions([
                         Tables\Actions\EditAction::make()
