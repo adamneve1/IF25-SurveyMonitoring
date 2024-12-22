@@ -23,13 +23,13 @@ class Manhour extends Model
 
     public function proyek()
     {
-        return $this->belongsTo(Proyek::class, 'proyek_id');
+        return $this->belongsTo(Proyek::class);
     }
     public function manpower_dl()
     {
-        return $this->belongsTo(Manpower_dl::class, 'manpower_dl_id');
+        return $this->belongsTo(Manpower_dl::class);
     }
-    public function manpower_idls()
+    public function manpower_idl()
     {
         return $this->belongsTo(Manpower_idl::class);
     }

@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Columns\Select;
 use Illuminate\Support\Str;
 use Filament\Forms\Components\DatePicker;
@@ -25,6 +26,9 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Actions\ExportAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use App\Filament\Exports\ManhourExporter;
 
 class ManhourResource extends Resource
 {
@@ -143,8 +147,8 @@ class ManhourResource extends Resource
                     ->label('Proyek')
                     ->sortable(),
                 // Tables\Columns\TextColumn::make('manpower_idl.nama')->label('Manpower IDL')->sortable(),
-                Tables\Columns\TextColumn::make('manpower_dl.nama')
-                    ->label('Manpower DL')
+                Tables\Columns\TextColumn::make('manpower_idl.nama')
+                    ->label('Manpower IDL')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tanggal')
                     ->date()
@@ -154,7 +158,7 @@ class ManhourResource extends Resource
                 Tables\Columns\TextColumn::make('pic')
                     ->label('PIC')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('devisi')
+                Tables\Columns\TextColumn::make('manpower_idl.devisi')
                     ->label('Devisi')
                     ->sortable(),
                     ])
@@ -187,9 +191,22 @@ class ManhourResource extends Resource
                         Tables\Actions\DeleteAction::make()
                             ->visible(fn ($record) => self::emailDomainCheck() && !self::isExcludedUser()),
                     ])
+                    ->headerActions([
+                        ExportAction::make()->exporter(ManhourExporter::class)
+                            ->label('Export Data'),
+                    ])
                     ->bulkActions([
-                        Tables\Actions\DeleteBulkAction::make()
-                            ->visible(fn () => self::emailDomainCheck() && !self::isExcludedUser()),
+                        Tables\Actions\BulkActionGroup::make([
+                            Tables\Actions\DeleteBulkAction::make()
+                                ->visible(fn () => self::emailDomainCheck() && !self::isExcludedUser())
+                                ->requiresConfirmation(),
+                            ExportBulkAction::make()
+                                ->exporter(ManhourExporter::class)
+                                ->label('Export Data yang Dipilih')
+                                ->columnMapping(false),
+                            
+                        ])
+                            ->label('Action'),
                     ]);
     }
 
