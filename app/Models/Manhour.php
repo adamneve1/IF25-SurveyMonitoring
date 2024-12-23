@@ -18,7 +18,7 @@ class Manhour extends Model
         'pic',
         'tanggal',
         'overtime',
-        'devisi',
+        'remark',
     ];
 
     public function proyek()

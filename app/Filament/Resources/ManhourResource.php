@@ -121,21 +121,9 @@ class ManhourResource extends Resource
                     ->required()
                     ->placeholder('Person In Charge')
                     ->label('PIC (Person in Charge)'),
-                Forms\Components\Select::make('devisi')
-                    ->options([
-                        'pgmt' => 'PGMT',
-                        'hvac' => 'HVAC',
-                        'qa.qc' => 'QA/QC',
-                        'piping' => 'Piping',
-                        'scaffolder' => 'Scaffolder',
-                        'structure' => 'Structure',
-                        'architectural' => 'Architectural',
-                        'civil' => 'Civil',
-                        ])
-                    ->required()
-                    ->placeholder('Devisi')
-                    ->native(false)
-                    ->label('Devisi'),
+                Forms\Components\Textarea::make('remark')
+                    ->label('Remark')
+                    ->placeholder('Remark'),
             ]);
     }
 
@@ -146,7 +134,6 @@ class ManhourResource extends Resource
                 Tables\Columns\TextColumn::make('proyek.nama_proyek')
                     ->label('Proyek')
                     ->sortable(),
-                // Tables\Columns\TextColumn::make('manpower_idl.nama')->label('Manpower IDL')->sortable(),
                 Tables\Columns\TextColumn::make('manpower_idl.nama')
                     ->label('Manpower IDL')
                     ->sortable(),

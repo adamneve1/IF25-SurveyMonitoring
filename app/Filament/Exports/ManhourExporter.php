@@ -7,8 +7,9 @@ use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
 use Filament\Actions\Exports\Models\Export;
 use Filament\Tables\Columns\TextColumn;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Font;
 class ManhourExporter extends Exporter
 {
     protected static ?string $model = Manhour::class;
@@ -36,7 +37,23 @@ class ManhourExporter extends Exporter
                 ->label('Tanggal'),
             ExportColumn::make('manpower_idl.devisi')
                 ->label('Devisi'),
+            ExportColumn::make('remark')
+                ->label('Remark'),
         ];
+    }
+    protected function modifySpreadsheet(Spreadsheet $spreadsheet): void
+    {
+        $sheet = $spreadsheet->getActiveSheet();
+        
+        $sheet->getColumnDimension('A')->setWidth(100); 
+        $sheet->getColumnDimension('B')->setWidth(100);
+        $sheet->getColumnDimension('C')->setWidth(100);
+        $sheet->getColumnDimension('D')->setWidth(100);
+        $sheet->getColumnDimension('E')->setWidth(100);
+        $sheet->getColumnDimension('F')->setWidth(100);
+        $sheet->getColumnDimension('G')->setWidth(100);
+
+        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
     }
 
     public static function getCompletedNotificationBody(Export $export): string
