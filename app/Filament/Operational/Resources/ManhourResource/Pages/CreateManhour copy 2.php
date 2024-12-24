@@ -1,7 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\ManhourResource\Pages;
-
+namespace App\Filament\Operational\Resources\ManhourResource\Pages;
 
 use App\Filament\Operational\Resources\ManhourResource;
 use App\Models\Manhour;
@@ -17,7 +16,7 @@ use Filament\Forms\Get;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+
 class CreateManhour extends CreateRecord
 {
     protected static string $resource = ManhourResource::class;
@@ -62,11 +61,12 @@ class CreateManhour extends CreateRecord
                 
 
                 DatePicker::make('tanggal')
-                 
-                    ->default(Carbon::now()),
+                    ->required(),
 
-
-                
+                TextInput::make('overtime')
+                    ->numeric()
+                    ->required()
+                    ->label('Overtime Hours'),
 
                 TextInput::make('pic')
                     ->required()
@@ -87,7 +87,7 @@ class CreateManhour extends CreateRecord
                     ->native(false)
                     ->label('Devisi'),
 
-                    Repeater::make('manhourn')
+                    Repeater::make('manhour')
                     ->label('Manpower DL')
                     ->schema([
                         Select::make('manpower_dl_id')
@@ -98,14 +98,9 @@ class CreateManhour extends CreateRecord
                                 Manpower_dl::query()
                                     ->where('proyek_id', $get('../../proyek_id')) // Perhatikan hierarki
                                     ->pluck('nama', 'id')
-
-                                
                             )
                             ->required()
                             ->placeholder('Pilih Manpower DL'),
-                            TextInput::make('overtime')
-                            ->numeric()
-                    ->required()
                     ])
                     ->minItems(1)
                     ->columnSpanFull()
@@ -119,38 +114,32 @@ class CreateManhour extends CreateRecord
     }
 
     public function save()
-
-
     {
         $get = $this->form->getState();
-        $tanggal = $get['tanggal'] ?? Carbon::now(); 
-        $insert = [];
-        foreach($get['manhourn'] as $row) {
-            array_push($insert, [
-                'proyek_id' => $get['proyek_id'],
-                'manpower_idl_id' => $get['manpower_idl_id'],
-                'manpower_dl_id' => $row['manpower_dl_id'],
-                'tanggal' => $get['tanggal'],
-                'jam_absen' => $get['jam_absen'],
-                'overtime' => $row['overtime'],
-                'pic' => $get['pic'],
-                'devisi' => $get['devisi'],
-            ]);
+
+        $manhourData = [
+            'proyek_id' => $get['proyek_id'],
+            'manpower_idl_id' => $get['manpower_idl_id'],
+            'tanggal' => $get['tanggal'],
+            'jam_absen' => $get['jam_absen'],
+            'overtime' => $get['overtime'],
+            'pic' => $get['pic'],
+            'devisi' => $get['devisi'],
+        ];
+
+        // Insert main Manhour record
+        $manhour = Manhour::create($manhourData);
+
+        // Insert related Manpower DL records from Repeater
+        if (!empty($get['manpower_dl'])) {
+            foreach ($get['manpower_dl'] as $dl) {
+                DB::table('manpower_dl_manhour')->insert([
+                    'manhour_id' => $manhour->id,
+                    'manpower_dl_id' => $dl['manpower_dl_id'],
+                ]);
+            }
         }
-        Manhour::insert($insert);
 
-         
-    
-
-        
-
-
-    
-     
-    
-     
-        // Redirect setelah berhasil menyimpan
-        return redirect()->to('/operational/manhours');
+        return redirect()->to('/admin/manhours');
     }
-    
 }

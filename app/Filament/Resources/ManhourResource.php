@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ManhourResource\Pages;
 use App\Models\Manhour;
 use App\Models\Manpower_dl;
+use App\Models\Manpower_idl;
+use App\Models\Proyek; // Import model Proyek
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -12,12 +14,22 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\SelectColumn;
+use Filament\Tables\Actions\ExportBulkAction;
+use Filament\Tables\Columns\Select;
 use Illuminate\Support\Str;
 use Filament\Forms\Components\DatePicker;
-use Filament\Tables\Filters\Filter;
+use Awcodes\TableRepeater\Components\TableRepeater;
+use Awcodes\TableRepeater\Header;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Actions\ExportAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use App\Filament\Exports\ManhourExporter;
+use Illuminate\Support\Facades\Auth;
 
 class ManhourResource extends Resource
 {
@@ -57,9 +69,10 @@ class ManhourResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('proyek_id')
-                    ->relationship('proyek', 'nama_proyek')
-                    ->native(false)
+                  Forms\Components\Select::make('proyek_id')
+                    ->options(Proyek::all()->pluck('nama_proyek','id'))
+                    ->label('Proyek')
+                      ->native(false)
                     ->live()
                     ->placeholder('Pilih Proyek')
                     ->required(),
@@ -73,23 +86,29 @@ class ManhourResource extends Resource
                     ->required()
                     ->placeholder('Jam Absen')
                     ->label('Jam Absen'),
-                Forms\Components\Repeater::make('manpower_dls')
-                    ->label('Manpower DL')
-                    ->schema([
-                        Forms\Components\Select::make('manpower_dl_id')
-                            ->required()
-                            ->native(false)
-                            ->label('Manpower DL')
-                            ->searchable()
-                            ->options(fn (Get $get) => Manpower_dl::query()
-                                ->where('proyek_id', $get('proyek_id'))
-                                ->pluck('nama', 'id')),
-                    ])
-                   ->columnSpanFull()
-                    ->addActionLabel('Tambah Manpower DL'),
+                Forms\Components\Select::make('manpower_idl_id')
+                    ->required()
+                    ->native(false)
+                    ->label('Manpower IDL')
+                    ->reactive()
+                    ->placeholder('Manpower IDL')
+                    ->searchable()
+                   ->options(fn(Get $get) => Manpower_idl::query()
+                        ->where('proyek_id', $get('proyek_id'))
+                        ->pluck('nama', 'id'))
+                    ->default(function(){
+                    $user = auth()->user();
+                        if ($user) {
+                            $manpowerIdl = Manpower_idl::where('nama', $user->name)->first();
+                                return $manpowerIdl ? $manpowerIdl->id : null;
+                        }
+                         return null;
+                    }),
                 Forms\Components\DatePicker::make('tanggal')
                     ->required()
-                    ->default(today()),
+                    ->default(Carbon::now())
+                    ->disabled()
+                    ->format('Y-m-d'),
                 Forms\Components\TextInput::make('overtime')
                     ->numeric()
                     ->required()
@@ -98,7 +117,15 @@ class ManhourResource extends Resource
                 Forms\Components\TextInput::make('pic')
                     ->required()
                     ->placeholder('Person In Charge')
-                    ->label('PIC (Person in Charge)'),
+                    ->label('PIC (Person in Charge)')
+                     ->default(function(){
+                       $user = auth()->user();
+                           if ($user) {
+                             $manpowerIdlPic = Manpower_idl::where('nama', $user->name)->first();
+                                 return $manpowerIdlPic ? $manpowerIdlPic->id : null;
+                           }
+                           return null;
+                       }),
                 Forms\Components\Select::make('devisi')
                     ->options([
                         'pgmt' => 'PGMT',
@@ -109,11 +136,25 @@ class ManhourResource extends Resource
                         'structure' => 'Structure',
                         'architectural' => 'Architectural',
                         'civil' => 'Civil',
-                    ])
+                        ])
                     ->required()
                     ->placeholder('Devisi')
                     ->native(false)
                     ->label('Devisi'),
+
+                    Forms\Components\Repeater::make('manpower_dl') // Menggunakan Repeater
+                    ->label('Manpower DL')
+                    ->schema([
+                         Forms\Components\Select::make('manpower_dl_id')
+                            ->native(false)
+                             ->label('Manpower DL')
+                            ->searchable()
+                            ->options(fn (Get $get) => Manpower_dl::query()
+                                ->where('proyek_id', $get('proyek_id'))
+                                ->pluck('nama', 'id')),
+                    ])
+                   ->columnSpanFull()
+                   ->addActionLabel('Tambah Manpower DL'),
             ]);
     }
 
@@ -121,76 +162,71 @@ class ManhourResource extends Resource
     {
         return $table
             ->columns([
-                 TextColumn::make('proyek.nama_proyek')
+                Tables\Columns\TextColumn::make('proyek.nama_proyek')
                     ->label('Proyek')
                     ->sortable(),
-                TextColumn::make('manpower_dls')
-                    ->label('Manpower DL')
-                    ->getStateUsing(fn (Manhour $record): string => $record->manpower_dls()->pluck('nama')->implode(', ')),
-                TextColumn::make('tanggal')
+                // Tables\Columns\TextColumn::make('manpower_idl.nama')->label('Manpower IDL')->sortable(),
+                Tables\Columns\TextColumn::make('manpower_idl.nama')
+                    ->label('Manpower IDL')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('tanggal')
                     ->date()
                     ->sortable(),
-                TextColumn::make('overtime')
+                Tables\Columns\TextColumn::make('overtime')
                     ->label('Overtime Hours'),
-                TextColumn::make('pic')
+                Tables\Columns\TextColumn::make('pic')
                     ->label('PIC')
                     ->sortable(),
-                SelectColumn::make('devisi')
+                Tables\Columns\TextColumn::make('manpower_idl.devisi')
                     ->label('Devisi')
-                    ->options([
-                        'pgmt' => 'PGMT',
-                        'hvac' => 'HVAC',
-                        'qa.qc' => 'QA/QC',
-                        'piping' => 'Piping',
-                        'scaffolder' => 'Scaffolder',
-                        'structure' => 'Structure',
-                        'architectural' => 'Architectural',
-                        'civil' => 'Civil',
+                    ->sortable(),
                     ])
-                    ->selectablePlaceholder(false)
-                    ->sortable()
-                    ->disabled(fn() => self::isExcludedUser()),
-            ])
-            ->filters([
-                Filter::make('today')
-                    ->label('Today')
-                    ->query(fn(Builder $query): Builder => $query->whereDate('tanggal', today())),
-                Filter::make('this_week')
-                    ->label('This Week')
-                    ->query(fn(Builder $query): Builder => $query->whereBetween('tanggal', [now()->startOfWeek(), now()->endOfWeek()])),
-                Filter::make('this_month')
-                    ->label('This Month')
-                    ->query(fn(Builder $query): Builder => $query->whereMonth('tanggal', now()->month)),
-                Filter::make('this_year')
-                    ->label('This Year')
-                    ->query(fn(Builder $query): Builder => $query->whereYear('tanggal', now()->year)),
-                Filter::make('custom_date')
-                    ->form([
-                        DatePicker::make('from'),
-                        DatePicker::make('to'),
+                    ->filters([
+                        SelectFilter::make('proyek_id')
+                            ->label('Filter By Proyek')
+                            ->relationship('proyek', 'nama_proyek')
+                            ->preload()
+                            ->indicator('Proyek'),
+                            Filter::make('tanggal')
+                        ->form([
+                            DatePicker::make('tanggal')
+                                ->placeholder('Pilih Tanggal')
+                            ])
+                            ->query(function ($query, array $data) {
+                                if (!empty($data['tanggal'])) {
+                                    $query->whereDate('tanggal', $data['tanggal']);
+                                }
+                            })
+                            ->indicateUsing(function (array $data): ?string {
+                                if (empty($data['tanggal'])) {
+                                    return null;
+                                }
+                                return 'Tanggal: ' . Carbon::parse($data['tanggal'])->toFormattedDateString();
+                            }),
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['from'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('tanggal', '>=', $date),
-                            )
-                            ->when(
-                                $data['to'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('tanggal', '<=', $date),
-                            );
-                    }),
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make()
-                    ->visible(fn($record) => self::isExcludedUser()),
-                Tables\Actions\DeleteAction::make()
-                    ->visible(fn($record) => self::emailDomainCheck() && !self::isExcludedUser()),
-            ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make()
-                    ->visible(fn() => self::emailDomainCheck() && !self::isExcludedUser()),
-            ]);
+                    ->actions([
+                        Tables\Actions\EditAction::make()
+                            ->visible(fn ($record) => self::isExcludedUser()),
+                        Tables\Actions\DeleteAction::make()
+                            ->visible(fn ($record) => self::emailDomainCheck() && !self::isExcludedUser()),
+                    ])
+                    ->headerActions([
+                        ExportAction::make()->exporter(ManhourExporter::class)
+                            ->label('Export Data'),
+                    ])
+                    ->bulkActions([
+                        Tables\Actions\BulkActionGroup::make([
+                            Tables\Actions\DeleteBulkAction::make()
+                                ->visible(fn () => self::emailDomainCheck() && !self::isExcludedUser())
+                                ->requiresConfirmation(),
+                            ExportBulkAction::make()
+                                ->exporter(ManhourExporter::class)
+                                ->label('Export Data yang Dipilih')
+                                ->columnMapping(false),
+                            
+                        ])
+                            ->label('Action'),
+                    ]);
     }
 
     public static function getRelations(): array
