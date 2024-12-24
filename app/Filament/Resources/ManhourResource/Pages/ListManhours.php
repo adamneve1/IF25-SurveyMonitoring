@@ -29,35 +29,51 @@ class ListManhours extends ListRecords
                 }),
             'pgmt' => Tab::make('PGMT')
                 ->modifyQueryUsing(function ($query) {
-                    return $query->where('devisi', 'pgmt');
+                    return $query->whereHas('manpower_idl', function ($subQuery) {
+                        $subQuery->where('devisi', 'pgmt');
+                    });
                 }),
             'hvac' => Tab::make('HVAC')
                 ->modifyQueryUsing(function ($query) {
-                    return $query->where('devisi', 'hvac');
+                    return $query->whereHas('manpower_idl', function ($subQuery) {
+                        $subQuery->where('devisi', 'hvac');
+                    });
                 }),
-            'pa.qc' => Tab::make('QA.QC')
+            'qa.qc' => Tab::make('QA.QC')
                 ->modifyQueryUsing(function ($query) {
-                    return $query->where('devisi', 'qa.qc');
+                    return $query->whereHas('manpower_idl', function ($subQuery) {
+                        $subQuery->where('devisi', 'qa.qc');
+                    });
                 }),
             'piping' => Tab::make('Piping')
                 ->modifyQueryUsing(function ($query) {
-                    return $query->where('devisi', 'piping');
+                    return $query->whereHas('manpower_idl', function ($subQuery) {
+                        $subQuery->where('devisi', 'piping');
+                    });
                 }),
             'scaffolder' => Tab::make('Scaffolder')
                 ->modifyQueryUsing(function ($query) {
-                    return $query->where('devisi', 'scaffolder');
+                    return $query->whereHas('manpower_idl', function ($subQuery) {
+                        $subQuery->where('devisi', 'scaffolder');
+                    });
                 }),
             'structure' => Tab::make('Structure')
                 ->modifyQueryUsing(function ($query) {
-                    return $query->where('devisi', 'structure');
+                    return $query->whereHas('manpower_idl', function ($subQuery) {
+                        $subQuery->where('devisi', 'structure');
+                    });
                 }),
             'architectural' => Tab::make('Architectural')
                 ->modifyQueryUsing(function ($query) {
-                    return $query->where('devisi', 'architectural');
+                    return $query->whereHas('manpower_idl', function ($subQuery) {
+                        $subQuery->where('devisi', 'architectural');
+                    });
                 }),
             'civil' => Tab::make('Civil')
                 ->modifyQueryUsing(function ($query) {
-                    return $query->where('devisi', 'civil');
+                    return $query->whereHas('manpower_idl', function ($subQuery) {
+                        $subQuery->where('devisi', 'civil');
+                    });
                 }),
         ];
     }

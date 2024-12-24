@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('pic');
             $table->date('tanggal');
             $table->unsignedInteger('overtime');
-            $table->enum('devisi', ['pgmt', 'hvac', 'qa.qc', 'piping', 'scaffolder', 'structure', 'architectural', 'civil']);
+            $table->text('remark');
             $table->timestamps();
         });
     }
