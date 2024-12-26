@@ -143,6 +143,9 @@ class ManhourResource extends Resource
                 Tables\Columns\TextColumn::make('manpower_idl.nama')
                     ->label('Manpower IDL')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('manpower_dl.nama')
+                    ->label('Manpower DL')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('tanggal')
                     ->date()
                     ->sortable(),
