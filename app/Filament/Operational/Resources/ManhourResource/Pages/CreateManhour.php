@@ -106,15 +106,7 @@ class CreateManhour extends CreateRecord
                     ->minItems(1)
                     ->columnSpanFull()
                     ->addActionLabel('Tambah Manpower DL')
-                     ->afterStateUpdated(function ($state, $get, $set) {
-                        // Cek apakah ada duplikasi pada manpower_dl_id
-                       if($state){
-                        $manpowerIds = array_column($state, 'manpower_dl_id');
-                         if (count($manpowerIds) !== count(array_unique($manpowerIds))) {
-                           throw ValidationException::withMessages(['manhourn' => 'Manpower DL tidak boleh duplikat.']);
-                         }
-                       }
-                   }),
+                 
 
             ]);
     }
