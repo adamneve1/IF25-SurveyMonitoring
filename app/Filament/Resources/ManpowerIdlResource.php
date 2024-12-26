@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Support\Str;
+use Filament\Tables\Filters\SelectFilter;
 
 class ManpowerIdlResource extends Resource
 {
@@ -92,23 +93,25 @@ class ManpowerIdlResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nama')->label('Manpower IDL')
+                Tables\Columns\TextColumn::make('nama')
+                    ->label('Manpower IDL')
                     ->sortable()
-                    ->placeholder('Manpower IDL')
                     ->disabled(fn () => self::isExcludedUser()),
                 Tables\Columns\TextColumn::make('proyek.nama_proyek')
                     ->label('Proyek')
-                    ->placeholder('Nama Proyek')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('devisi')
                     ->label('Devisi')
-                    ->placeholder('Devisi')
                     ->sortable(),
                     
             ])
-            ->filters([
-                //
-            ])
+             ->filters([
+                SelectFilter::make('proyek_id')
+                    ->label('Filter By Proyek')
+                    ->relationship('proyek', 'nama_proyek')
+                    ->preload()
+                    ->indicator('Proyek'),
+                 ])
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->visible(fn ($record) => self::isExcludedUser()),

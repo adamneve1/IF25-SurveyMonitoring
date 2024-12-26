@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
+use Filament\Tables\Filters\SelectFilter;
 
 class ManpowerDlResource extends Resource
 {
@@ -70,12 +71,12 @@ class ManpowerDlResource extends Resource
                     ->placeholder('Pilih Proyek')
                     ->native(false)
                     ->label('Proyek'),
-                Forms\Components\Select::make('manpower_idl_id')
+                  Forms\Components\Select::make('manpower_idl_id')
                     ->relationship('manpower_idl', 'nama')
                     ->required()
-                    ->placeholder('Pilih Proyek')
+                    ->placeholder('Pilih Manpower IDL')
                     ->native(false)
-                    ->label('Proyek'),
+                    ->label('Manpower IDL'),
                 Forms\Components\Select::make('devisi')
                     ->options([
                         'pgmt' => 'PGMT',
@@ -102,6 +103,8 @@ class ManpowerDlResource extends Resource
                     ->label('Manpower DL')
                     ->sortable()
                     ->disabled(fn () => self::isExcludedUser()),
+                    
+                    
                 Tables\Columns\TextColumn::make('proyek.nama_proyek')
                     ->label('Proyek')
                     ->sortable(),
@@ -111,7 +114,24 @@ class ManpowerDlResource extends Resource
 
                     ])
                     ->filters([
-                        
+                        SelectFilter::make('proyek_id')
+                            ->label('Filter By Proyek')
+                            ->relationship('proyek', 'nama_proyek')
+                            ->preload()
+                            ->indicator('Proyek'),
+                        SelectFilter::make('devisi')
+                            ->label('Filter By Devisi')
+                             ->options([
+                                'pgmt' => 'PGMT',
+                                'hvac' => 'HVAC',
+                                'qa.qc' => 'QA/QC',
+                                'piping' => 'Piping',
+                                'scaffolder' => 'Scaffolder',
+                                'structure' => 'Structure',
+                                'architectural' => 'Architectural',
+                                'civil' => 'Civil',
+                            ])
+                            ->indicator('Devisi'),
                     ])
                     ->actions([
                         Tables\Actions\EditAction::make()
