@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('manpower_dls', function (Blueprint $table) {
         $table->id();
         $table->foreignId('proyek_id')->constrained('proyeks')->cascadeOnDelete();
+        $table->foreignId('manpower_idl_id')->constrained('manpower_idls')->cascadeOnDelete();
         $table->string('nama');
         $table->enum('devisi', ['pgmt', 'hvac', 'qa.qc', 'piping', 'scaffolder', 'structure', 'architectural', 'civil']);
         });

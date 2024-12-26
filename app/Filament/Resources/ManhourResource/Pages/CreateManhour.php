@@ -29,15 +29,18 @@ class CreateManhour extends CreateRecord
         return $form
             ->schema([
                 Select::make('proyek_id')
-                ->label('Proyek')
-                ->options(Proyek::query()
-                    ->whereNotNull('nama_proyek')
-                    ->pluck('nama_proyek', 'id'))
-                ->native(false)
-                ->reactive()
-                ->live()
-                ->required(),
-            
+                    ->label('Proyek')
+                    ->options(Proyek::query()
+                        ->whereNotNull('nama_proyek')
+                        ->pluck('nama_proyek', 'id'))
+                    ->native(false)
+                    ->reactive()
+                    ->live()
+                    ->required()
+                    ->afterStateUpdated(function ($state, $set) {
+                        $set('manpower_idl_id',null);
+                       
+                    }),
 
                 Select::make('jam_absen')
                     ->native(false)
@@ -49,108 +52,93 @@ class CreateManhour extends CreateRecord
                     ->required()
                     ->label('Jam Absen'),
 
-                    Select::make('manpower_idl_id')
+                  Select::make('manpower_idl_id')
                     ->required()
                     ->native(false)
                     ->label('Manpower IDL')
                     ->reactive()
                     ->searchable()
+                     ->live()
                     ->options(fn(Get $get) => Manpower_idl::query()
                         ->where('proyek_id', $get('proyek_id'))
                         ->whereNotNull('nama')
-                        ->pluck('nama', 'id')),
-                
+                        ->pluck('nama', 'id'))
+                     ->afterStateUpdated(function ($state, $set) {
+                           $set('manpower_dl_id',null);
+                       }),
 
-                DatePicker::make('tanggal')
                  
-                    ->default(Carbon::now()),
+
+        
+
+                    TextInput::make('remarks')
+                ->required()
+                ->label('Remarks'),
 
 
-                
-
-                TextInput::make('pic')
-                    ->required()
-                    ->label('PIC (Person in Charge)'),
-
-                Select::make('devisi')
-                    ->options([
-                        'pgmt' => 'PGMT',
-                        'hvac' => 'HVAC',
-                        'qa.qc' => 'QA/QC',
-                        'piping' => 'Piping',
-                        'scaffolder' => 'Scaffolder',
-                        'structure' => 'Structure',
-                        'architectural' => 'Architectural',
-                        'civil' => 'Civil',
-                    ])
-                    ->required()
-                    ->native(false)
-                    ->label('Devisi'),
-
-                    Repeater::make('manhourn')
+                 Repeater::make('manhourn')
                     ->label('Manpower DL')
+                    ->live()
                     ->schema([
                         Select::make('manpower_dl_id')
                             ->label('Manpower DL')
                             ->searchable()
                             ->reactive()
-                            ->options(fn(Get $get) => 
-                                Manpower_dl::query()
-                                    ->where('proyek_id', $get('../../proyek_id')) // Perhatikan hierarki
-                                    ->pluck('nama', 'id')
+                             ->live()
+                              ->options(function (Get $get) {
+                                $proyekId = $get('../../proyek_id');
+                                 $manpowerIdlId = $get('../../manpower_idl_id');
+                                $selectedIds = collect($get('manhourn') ?? [])
+                                        ->pluck('manpower_dl_id')
+                                        ->filter()
+                                        ->toArray();
 
-                                
-                            )
+                                return Manpower_dl::query()
+                                    ->where('proyek_id', $proyekId)
+                                     ->whereNotNull('nama')
+                                      ->when($manpowerIdlId, function ($query, $manpowerIdlId) {
+                                            return $query->whereHas('manpower_idl', function ($query) use ($manpowerIdlId) {
+                                                $query->where('manpower_idl_id', $manpowerIdlId);
+                                            });
+                                        })
+                                     ->whereNotIn('id', $selectedIds)
+                                    ->pluck('nama', 'id');
+                            })
                             ->required()
                             ->placeholder('Pilih Manpower DL'),
-                            TextInput::make('overtime')
+
+                           TextInput::make('overtime')
                             ->numeric()
-                    ->required()
+                            ->required()
+                                   ->label('Overtime Hours'),
                     ])
                     ->minItems(1)
                     ->columnSpanFull()
                     ->addActionLabel('Tambah Manpower DL'),
-                
-                
+                     
 
-                
-                
             ]);
     }
 
-    public function save()
-
-
+     public function save()
     {
         $get = $this->form->getState();
-        $tanggal = $get['tanggal'] ?? Carbon::now(); 
         $insert = [];
         foreach($get['manhourn'] as $row) {
-            array_push($insert, [
+             $insert[] = [
                 'proyek_id' => $get['proyek_id'],
                 'manpower_idl_id' => $get['manpower_idl_id'],
                 'manpower_dl_id' => $row['manpower_dl_id'],
-                'tanggal' => $get['tanggal'],
+                'tanggal' => Carbon::now()->toDateString(),
                 'jam_absen' => $get['jam_absen'],
                 'overtime' => $row['overtime'],
-                'pic' => $get['pic'],
-                'devisi' => $get['devisi'],
-            ]);
+                'pic' => auth()->user()->name ?? '', 
+                'remark' => $get['remarks'],
+             ];
         }
-        Manhour::insert($insert);
 
-         
-    
+       Manhour::insert($insert);
 
-        
-
-
-    
-     
-    
-     
-        // Redirect setelah berhasil menyimpan
         return redirect()->to('/operational/manhours');
     }
-    
 }

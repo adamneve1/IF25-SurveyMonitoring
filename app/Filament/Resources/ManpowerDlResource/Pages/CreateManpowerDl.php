@@ -34,6 +34,12 @@ class CreateManpowerDl extends CreateRecord
                     ->placeholder('Pilih Proyek')
                     ->native(false)
                     ->label('Proyek'),
+              Select::make('manpower_idl_id')
+                    ->relationship('manpower_idl', 'nama')
+                    ->required()
+                    ->placeholder('Pilih Manpower IDL')
+                    ->native(false)
+                    ->label('Manpower IDL'),
                 Select::make('devisi')
                     ->options([
                         'pgmt' => 'PGMT',
@@ -83,6 +89,7 @@ class CreateManpowerDl extends CreateRecord
             $insert[] = [
                 'proyek_id' => $get['proyek_id'],
                 'devisi' => $get['devisi'],
+                'manpower_idl_id' => $get['manpower_idl_id'],
                 'nama' => $row['nama'],
             ];
         }

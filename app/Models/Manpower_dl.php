@@ -19,6 +19,7 @@ class Manpower_dl extends Model
         'proyek_id',
         'nama',
         'devisi',
+        'manpower_idl_id',
     ];
 
      public function proyek(): BelongsTo
@@ -28,5 +29,10 @@ class Manpower_dl extends Model
     public function manhours(): BelongsToMany
     {
         return $this->belongsToMany(Manhour::class, 'manhour_manpower_dl', 'manpower_dl_id', 'manhour_id');
+        
     }
-}
+    
+    public function manpower_idl(): BelongsTo
+    {
+        return $this->belongsTo(manpower_idl::class);
+}}

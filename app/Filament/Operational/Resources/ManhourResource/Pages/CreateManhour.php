@@ -37,7 +37,11 @@ class CreateManhour extends CreateRecord
                     ->native(false)
                     ->reactive()
                     ->live()
-                    ->required(),
+                    ->required()
+                    ->afterStateUpdated(function ($state, $set) {
+                        $set('manpower_idl_id',null);
+                       
+                    }),
 
                 Select::make('jam_absen')
                     ->native(false)
@@ -49,24 +53,24 @@ class CreateManhour extends CreateRecord
                     ->required()
                     ->label('Jam Absen'),
 
-                Select::make('manpower_idl_id')
+                  Select::make('manpower_idl_id')
                     ->required()
                     ->native(false)
                     ->label('Manpower IDL')
                     ->reactive()
                     ->searchable()
+                     ->live()
                     ->options(fn(Get $get) => Manpower_idl::query()
                         ->where('proyek_id', $get('proyek_id'))
                         ->whereNotNull('nama')
-                        ->pluck('nama', 'id')),
+                        ->pluck('nama', 'id'))
+                     ->afterStateUpdated(function ($state, $set) {
+                           $set('manpower_dl_id',null);
+                       }),
 
-                 DatePicker::make('tanggal')
-                    ->required()
-                    ->default(now()->toDateString()),
+                 
 
-                TextInput::make('pic')
-                    ->required()
-                    ->label('PIC (Person in Charge)'),
+        
 
                     TextInput::make('remarks')
                 ->required()
@@ -75,25 +79,31 @@ class CreateManhour extends CreateRecord
 
                  Repeater::make('manhourn')
                     ->label('Manpower DL')
-                    ->live() // Tambahkan live() di sini
+                    ->live()
                     ->schema([
                         Select::make('manpower_dl_id')
                             ->label('Manpower DL')
                             ->searchable()
                             ->reactive()
-                             ->live() // Tambahkan live() di sini
-                            ->options(function (Get $get, $livewire) {
-                                    $proyekId = $get('../../proyek_id');
-                                   $selectedIds = collect($get('manhourn') ?? [])
-                                    ->pluck('manpower_dl_id')
+                             ->live()
+                              ->options(function (Get $get) {
+                                $proyekId = $get('../../proyek_id');
+                                 $manpowerIdlId = $get('../../manpower_idl_id');
+                                $selectedIds = collect($get('manhourn') ?? [])
+                                        ->pluck('manpower_dl_id')
                                         ->filter()
-                                    ->toArray();
-                                    return Manpower_dl::query()
-                                        ->where('proyek_id', $proyekId)
-                                        ->whereNotNull('nama')
-                                        ->whereNotIn('id', $selectedIds)
-                                        ->pluck('nama', 'id')
-                                        ;
+                                        ->toArray();
+
+                                return Manpower_dl::query()
+                                    ->where('proyek_id', $proyekId)
+                                     ->whereNotNull('nama')
+                                      ->when($manpowerIdlId, function ($query, $manpowerIdlId) {
+                                            return $query->whereHas('manpower_idl', function ($query) use ($manpowerIdlId) {
+                                                $query->where('manpower_idl_id', $manpowerIdlId);
+                                            });
+                                        })
+                                     ->whereNotIn('id', $selectedIds)
+                                    ->pluck('nama', 'id');
                             })
                             ->required()
                             ->placeholder('Pilih Manpower DL'),
@@ -105,8 +115,8 @@ class CreateManhour extends CreateRecord
                     ])
                     ->minItems(1)
                     ->columnSpanFull()
-                    ->addActionLabel('Tambah Manpower DL')
-                 
+                    ->addActionLabel('Tambah Manpower DL'),
+                     
 
             ]);
     }
@@ -120,10 +130,10 @@ class CreateManhour extends CreateRecord
                 'proyek_id' => $get['proyek_id'],
                 'manpower_idl_id' => $get['manpower_idl_id'],
                 'manpower_dl_id' => $row['manpower_dl_id'],
-                'tanggal' => $get['tanggal'],
+                'tanggal' => Carbon::now()->toDateString(),
                 'jam_absen' => $get['jam_absen'],
                 'overtime' => $row['overtime'],
-                'pic' => $get['pic'],
+                'pic' => auth()->user()->name ?? '', 
                 'remark' => $get['remarks'],
              ];
         }
