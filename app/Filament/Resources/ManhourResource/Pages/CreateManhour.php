@@ -29,18 +29,15 @@ class CreateManhour extends CreateRecord
         return $form
             ->schema([
                 Select::make('proyek_id')
-                    ->label('Proyek')
-                    ->options(Proyek::query()
-                        ->whereNotNull('nama_proyek')
-                        ->pluck('nama_proyek', 'id'))
-                    ->native(false)
-                    ->reactive()
-                    ->live()
-                    ->required()
-                    ->afterStateUpdated(function ($state, $set) {
-                        $set('manpower_idl_id',null);
-                       
-                    }),
+                ->label('Proyek')
+                ->options(Proyek::query()
+                    ->whereNotNull('nama_proyek')
+                    ->pluck('nama_proyek', 'id'))
+                ->native(false)
+                ->reactive()
+                ->live()
+                ->required(),
+            
 
                 Select::make('jam_absen')
                     ->native(false)
@@ -52,31 +49,25 @@ class CreateManhour extends CreateRecord
                     ->required()
                     ->label('Jam Absen'),
 
-                  Select::make('manpower_idl_id')
+                    Select::make('manpower_idl_id')
                     ->required()
                     ->native(false)
                     ->label('Manpower IDL')
                     ->reactive()
                     ->searchable()
-                     ->live()
                     ->options(fn(Get $get) => Manpower_idl::query()
                         ->where('proyek_id', $get('proyek_id'))
                         ->whereNotNull('nama')
-                        ->pluck('nama', 'id'))
-                     ->afterStateUpdated(function ($state, $set) {
-                           $set('manpower_dl_id',null);
-                       }),
+                        ->pluck('nama', 'id')),
+                
 
+                DatePicker::make('tanggal')
                  
-
-        
-
-                    TextInput::make('remarks')
-                ->required()
-                ->label('Remarks'),
+                    ->default(Carbon::now()),
 
 
-                 Repeater::make('manhourn')
+                
+                    Repeater::make('manhourn')
                     ->label('Manpower DL')
                     ->live()
                     ->schema([
