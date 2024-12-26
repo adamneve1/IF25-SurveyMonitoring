@@ -102,13 +102,14 @@ class ManhourResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('proyek.nama_proyek')->label('Proyek')->sortable(),
-                TextColumn::make('manpower_idl.nama')->label('Manpower IDL')->sortable(),
-                TextColumn::make('manpower_dl.nama')->label('Manpower DL')->sortable(),
-                TextColumn::make('tanggal')->date()->sortable(),
-                TextColumn::make('overtime')->label('Overtime Hours'),
-                TextColumn::make('pic')->label('PIC')->sortable(),
-                TextColumn::make('devisi')->label('Divisi')->sortable(),
+                TextColumn::make('proyek.nama_proyek')->label('Proyek'),
+                TextColumn::make('manpower_idl.nama')->label('Manpower IDL'),  // Menampilkan nama Manpower IDL
+                TextColumn::make('manpower_dl.nama')->label('Manpower DL'),  // Menampilkan nama Manpower DL
+                TextColumn::make('tanggal')->label('Tanggal'),
+                TextColumn::make('jam_absen')->label('Jam Absen'),
+                TextColumn::make('overtime')->label('Overtime'),
+                TextColumn::make('pic')->label('PIC'),
+                TextColumn::make('remark')->label('Remarks'),
             ])
             ->filters([
                 // Add any filters you need here

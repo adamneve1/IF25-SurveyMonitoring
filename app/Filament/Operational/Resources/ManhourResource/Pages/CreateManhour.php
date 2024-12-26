@@ -17,6 +17,8 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Validation\ValidationException;
+
 class CreateManhour extends CreateRecord
 {
     protected static string $resource = ManhourResource::class;
@@ -28,15 +30,14 @@ class CreateManhour extends CreateRecord
         return $form
             ->schema([
                 Select::make('proyek_id')
-                ->label('Proyek')
-                ->options(Proyek::query()
-                    ->whereNotNull('nama_proyek')
-                    ->pluck('nama_proyek', 'id'))
-                ->native(false)
-                ->reactive()
-                ->live()
-                ->required(),
-            
+                    ->label('Proyek')
+                    ->options(Proyek::query()
+                        ->whereNotNull('nama_proyek')
+                        ->pluck('nama_proyek', 'id'))
+                    ->native(false)
+                    ->reactive()
+                    ->live()
+                    ->required(),
 
                 Select::make('jam_absen')
                     ->native(false)
@@ -48,7 +49,7 @@ class CreateManhour extends CreateRecord
                     ->required()
                     ->label('Jam Absen'),
 
-                    Select::make('manpower_idl_id')
+                Select::make('manpower_idl_id')
                     ->required()
                     ->native(false)
                     ->label('Manpower IDL')
@@ -58,73 +59,72 @@ class CreateManhour extends CreateRecord
                         ->where('proyek_id', $get('proyek_id'))
                         ->whereNotNull('nama')
                         ->pluck('nama', 'id')),
-                
 
-                DatePicker::make('tanggal')
+                 DatePicker::make('tanggal')
                     ->required()
-                    ->default(Carbon::now()),
-
-
-                
+                    ->default(now()->toDateString()),
 
                 TextInput::make('pic')
                     ->required()
                     ->label('PIC (Person in Charge)'),
 
-                Select::make('devisi')
-                    ->options([
-                        'pgmt' => 'PGMT',
-                        'hvac' => 'HVAC',
-                        'qa.qc' => 'QA/QC',
-                        'piping' => 'Piping',
-                        'scaffolder' => 'Scaffolder',
-                        'structure' => 'Structure',
-                        'architectural' => 'Architectural',
-                        'civil' => 'Civil',
-                    ])
-                    ->required()
-                    ->native(false)
-                    ->label('Devisi'),
+                    TextInput::make('remarks')
+                ->required()
+                ->label('Remarks'),
 
-                    Repeater::make('manhourn')
+
+                 Repeater::make('manhourn')
                     ->label('Manpower DL')
+                    ->live() // Tambahkan live() di sini
                     ->schema([
                         Select::make('manpower_dl_id')
                             ->label('Manpower DL')
                             ->searchable()
                             ->reactive()
-                            ->options(fn(Get $get) => 
-                                Manpower_dl::query()
-                                    ->where('proyek_id', $get('../../proyek_id')) // Perhatikan hierarki
-                                    ->pluck('nama', 'id')
-
-                                
-                            )
+                             ->live() // Tambahkan live() di sini
+                            ->options(function (Get $get, $livewire) {
+                                    $proyekId = $get('../../proyek_id');
+                                   $selectedIds = collect($get('manhourn') ?? [])
+                                    ->pluck('manpower_dl_id')
+                                        ->filter()
+                                    ->toArray();
+                                    return Manpower_dl::query()
+                                        ->where('proyek_id', $proyekId)
+                                        ->whereNotNull('nama')
+                                        ->whereNotIn('id', $selectedIds)
+                                        ->pluck('nama', 'id')
+                                        ;
+                            })
                             ->required()
                             ->placeholder('Pilih Manpower DL'),
-                            TextInput::make('overtime')
+
+                           TextInput::make('overtime')
                             ->numeric()
-                    ->required()
+                            ->required()
+                                   ->label('Overtime Hours'),
                     ])
                     ->minItems(1)
                     ->columnSpanFull()
-                    ->addActionLabel('Tambah Manpower DL'),
-                
-                
+                    ->addActionLabel('Tambah Manpower DL')
+                     ->afterStateUpdated(function ($state, $get, $set) {
+                        // Cek apakah ada duplikasi pada manpower_dl_id
+                       if($state){
+                        $manpowerIds = array_column($state, 'manpower_dl_id');
+                         if (count($manpowerIds) !== count(array_unique($manpowerIds))) {
+                           throw ValidationException::withMessages(['manhourn' => 'Manpower DL tidak boleh duplikat.']);
+                         }
+                       }
+                   }),
 
-                
-                
             ]);
     }
 
-    public function save()
-
-
+     public function save()
     {
         $get = $this->form->getState();
         $insert = [];
         foreach($get['manhourn'] as $row) {
-            array_push($insert, [
+             $insert[] = [
                 'proyek_id' => $get['proyek_id'],
                 'manpower_idl_id' => $get['manpower_idl_id'],
                 'manpower_dl_id' => $row['manpower_dl_id'],
@@ -132,23 +132,12 @@ class CreateManhour extends CreateRecord
                 'jam_absen' => $get['jam_absen'],
                 'overtime' => $row['overtime'],
                 'pic' => $get['pic'],
-                'devisi' => $get['devisi'],
-            ]);
+                'remark' => $get['remarks'],
+             ];
         }
-        Manhour::insert($insert);
 
-         
-    
+       Manhour::insert($insert);
 
-        
-
-
-    
-     
-    
-     
-        // Redirect setelah berhasil menyimpan
         return redirect()->to('/operational/manhours');
     }
-    
 }
