@@ -22,7 +22,7 @@ class ManhourResource extends Resource
     protected static ?string $model = Manhour::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-plus';
-    protected static ?string $navigationLabel = 'Manhour';
+    protected static ?string $navigationLabel = 'Overtime (Manhour)';
 
     public static function canCreate(): bool
     {

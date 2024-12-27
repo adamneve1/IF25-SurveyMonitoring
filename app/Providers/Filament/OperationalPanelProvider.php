@@ -31,19 +31,20 @@ class OperationalPanelProvider extends PanelProvider
             ])
             ->darkMode(condition:false)
             ->discoverResources(in: app_path('Filament/Operational/Resources'), for: 'App\\Filament\\Operational\\Resources')
-            ->discoverPages(in: app_path('Filament/Operational/Pages'), for: 'App\\Filament\\Operational\\Pages')
-            ->pages([
-                Pages\Dashboard::class,
-            ])
-          
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+              ->discoverPages(in: app_path('Filament/Operational/Pages'), for: 'App\\Filament\\Operational\\Pages')
             ->pages([])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
-            
-            
-            ->widgets([
-                
-            ])
+           ->discoverWidgets(in: app_path('Filament/Operational/Widgets'), for: 'App\\Filament\\Operational\\Widgets')
+            ->navigationItems([
+                \Filament\Navigation\NavigationItem::make('Absensi')
+                ->url('/operational/manpowers')
+                ->icon('heroicon-o-user-group'),
+             
+                    \Filament\Navigation\NavigationItem::make('Overtime (Manhour)')
+                        ->url('/operational/manhours')
+                        ->icon('heroicon-o-user-plus'),
+                      
+                   
+                    ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

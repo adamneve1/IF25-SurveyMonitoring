@@ -25,6 +25,7 @@ class CreateManpower extends CreateRecord
 {
     protected static string $resource = ManpowerResource::class;
     protected static string $view = 'filament.pages.form-manppour';
+    
 
     // Metode ini mengatur URL redirect setelah data berhasil disimpan
     protected function getRedirectUrl(): string

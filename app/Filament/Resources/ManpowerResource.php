@@ -87,15 +87,15 @@ class ManpowerResource extends Resource
                     ->label('Nama Proyek')
                     ->sortable(),
                 TextColumn::make('manpower_dl.nama')
-                    ->label('Manpowe DL')
+                    ->label('Manpower DL')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('manpower_idl.nama')
-                    ->label('Manpowe IDL')
+                    ->label('Manpower IDL')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('hadir')
-                     ->label('Hadir')
+                     ->label('Absensi') // Mengubah label menjadi 'Absensi'
                     ->sortable()
                       ->formatStateUsing(fn (string $state): string => $state === '1' ? 'Hadir' : 'Tidak Hadir'),
                 TextColumn::make('manpower_idl.devisi')
