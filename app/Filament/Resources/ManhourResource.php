@@ -6,7 +6,7 @@ use App\Filament\Resources\ManhourResource\Pages;
 use App\Models\Manhour;
 use App\Models\Manpower_dl;
 use App\Models\Manpower_idl;
-use App\Models\Proyek; // Import model Proyek
+use App\Models\Proyek;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -29,6 +29,10 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use App\Filament\Exports\ManhourExporter;
+use Filament\Tables\Actions\ImportAction;
+use App\Filament\Imports\ManhourImporter;
+
+
 
 class ManhourResource extends Resource
 {
@@ -190,6 +194,9 @@ class ManhourResource extends Resource
                     ->headerActions([
                         ExportAction::make()->exporter(ManhourExporter::class)
                             ->label('Export Data'),
+                        ImportAction::make() // Konfigurasi ImportAction
+                            ->importer(ManhourImporter::class)
+                            ->label('Import Data'),
                     ])
                     ->bulkActions([
                         Tables\Actions\BulkActionGroup::make([

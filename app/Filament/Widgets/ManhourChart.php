@@ -16,25 +16,31 @@ class ManhourChart extends ChartWidget
 
     protected int | string | array  $columnSpan = 1 ;
 
-    protected function getData(): array
+     protected function getData(): array
     {
         $proyek = $this->filters['proyek_id'] ?? null;
         $start = $this->filters['start'];
         $end = $this->filters['end'];
-        
-        $query = Manhour::query();
 
-        if ($proyek) {
-            $query->where('proyek_id', $proyek);
-        }
+           $query = Manhour::query()
+            ->when($proyek, function ($query, $proyek) {
+                return $query->where('proyek_id', $proyek);
+            });
 
         $dataOvertime = Trend::model(Manhour::class)
-            ->between(
-                start: $start ? Carbon::parse($start) : now()->subMonths(6),
-                end: $end ? Carbon::parse($end) : now(),
-            )
-            ->perMonth()
-            ->sum('overtime');
+        ->between(
+            start: $start ? Carbon::parse($start) : now()->subMonths(6),
+            end: $end ? Carbon::parse($end) : now(),
+        )
+        ->perMonth()
+        ->sum('overtime');
+
+        if ($dataOvertime->isEmpty()) {
+            return [
+                'datasets' => [],
+                'labels' => [],
+            ];
+        }
 
         return [
             'datasets' => [
@@ -45,7 +51,7 @@ class ManhourChart extends ChartWidget
                     'backgroundColor' => '#4CAF50',
                 ],
             ],
-            'labels' => $dataOvertime->map(fn (TrendValue $value) => Carbon::parse($value->date)->format('F')),
+             'labels' => $dataOvertime->map(fn (TrendValue $value) => Carbon::parse($value->date)->format('F')),
         ];
     }
 

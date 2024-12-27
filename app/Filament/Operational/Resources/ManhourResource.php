@@ -12,6 +12,9 @@ use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\SelectColumn;
 use Illuminate\Support\Str;
+use Filament\Tables\Actions\ImportAction;
+use App\Filament\Imports\ManhourImporter;
+
 
 
 class ManhourResource extends Resource
@@ -115,7 +118,9 @@ class ManhourResource extends Resource
                 // Add any filters you need here
             ])
             ->actions([]) // No actions (Edit action removed)
+            
             ->bulkActions([]); // No bulk actions (Delete action removed)
+            
     }
 
     public static function getRelations(): array

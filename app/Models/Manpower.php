@@ -11,16 +11,27 @@ class Manpower extends Model
 
     // Tentukan nama tabel yang digunakan model ini
     protected $table = 'manpowers';
-    public $timestamps = false;
+   
 
     // Tentukan kolom yang dapat diisi secara massal
     protected $fillable = [
         'proyek_id',
-        'nama',
-        'devisi'
+        'manpower_idl_id',
+        'manpower_dl_id',
+        'pic',
+        'tanggal',
+        'remark',
     ];
     public function proyek()
     {
         return $this->belongsTo(Proyek::class);
+    }
+    public function manpower_dl()
+    {
+        return $this->belongsTo(Manpower_dl::class,'manpower_dl_id');  
+    }
+    public function manpower_idl()
+    {
+        return $this->belongsTo(Manpower_idl::class, 'manpower_idl_id');
     }
 }

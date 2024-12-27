@@ -9,45 +9,44 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Columns\SelectColumn;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Support\Str;
 
 class ManpowerResource extends Resource
 {
     protected static ?string $model = Manpower::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static ?string $navigationLabel = 'Manpower';
+    protected static ?string $label = 'Manpower';
 
-    // Batasi akses Create
+
     public static function canCreate(): bool
     {
         return self::emailDomainCheck() && !self::isExcludedUser();
     }
 
-    // Batasi akses Edit
     public static function canEdit($record): bool
     {
         return self::emailDomainCheck() && !self::isExcludedUser();
     }
 
-    // Batasi akses Delete
     public static function canDelete($record): bool
     {
         return self::emailDomainCheck() && !self::isExcludedUser();
     }
 
-    
     protected static function emailDomainCheck(): bool
     {
         $userEmail = auth()->user()?->email;
-
         return Str::endsWith($userEmail, '@lks.com');
     }
 
-  
     protected static function isExcludedUser(): bool
     {
         $userEmail = auth()->user()?->email;
-
         return $userEmail === 'pras@lks.com';
     }
 
@@ -58,10 +57,12 @@ class ManpowerResource extends Resource
                 Forms\Components\Select::make('proyek_id')
                     ->relationship('proyek', 'nama_proyek')
                     ->native(false)
-                    ->required(),
+                    ->required()
+                    ->label('Proyek'),
                 Forms\Components\TextInput::make('nama')
-                    ->required(),
-                Forms\Components\Select::make('devisi')
+                    ->required()
+                     ->label('Manpower'),
+                 Forms\Components\Select::make('devisi')
                     ->options([
                         'pgmt' => 'PGMT',
                         'hvac' => 'HVAC',
@@ -82,14 +83,37 @@ class ManpowerResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('proyek.nama_proyek')
+                TextColumn::make('proyek.nama_proyek')
                     ->label('Nama Proyek')
-                    ->placeholder('Nama Proyek'),
-                Tables\Columns\TextColumn::make('nama')
-                    ->label('Manpower')
-                    ->placeholder('Nama Manpower'),
-                Tables\Columns\SelectColumn::make('devisi')
+                    ->sortable(),
+                TextColumn::make('manpower_dl.nama')
+                    ->label('Manpowe DL')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('manpower_idl.nama')
+                    ->label('Manpowe IDL')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('hadir')
+                     ->label('Hadir')
+                    ->sortable()
+                      ->formatStateUsing(fn (string $state): string => $state === '1' ? 'Hadir' : 'Tidak Hadir'),
+                TextColumn::make('manpower_idl.devisi')
                     ->label('Devisi')
+                    ->sortable(),
+                    TextColumn::make('remark')
+                    ->label('Remarks')
+                    ->sortable(),
+                
+            ])
+            ->filters([
+                SelectFilter::make('proyek_id')
+                    ->label('Filter By Proyek')
+                    ->relationship('proyek', 'nama_proyek')
+                    ->preload()
+                    ->indicator('Proyek'),
+                SelectFilter::make('devisi')
+                    ->label('Filter By Devisi')
                     ->options([
                         'pgmt' => 'PGMT',
                         'hvac' => 'HVAC',
@@ -100,23 +124,17 @@ class ManpowerResource extends Resource
                         'architectural' => 'Architectural',
                         'civil' => 'Civil',
                     ])
-                    ->placeholder('Devisi')
-                    ->selectablePlaceholder(false)
-                    ->sortable()
-                    ->disabled(fn () => self::isExcludedUser()), // Nonaktifkan inline editing
-            ])
-            ->filters([
-                //
+                    ->indicator('Devisi'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                ->visible(fn ($record) => self::isExcludedUser()),
-            Tables\Actions\DeleteAction::make()
-                ->visible(fn ($record) => self::emailDomainCheck() && !self::isExcludedUser()),
-        ])
-        ->bulkActions([
-            Tables\Actions\DeleteBulkAction::make()
-                ->visible(fn () => self::emailDomainCheck() && !self::isExcludedUser()),
+                    ->visible(fn ($record) => self::isExcludedUser()),
+                Tables\Actions\DeleteAction::make()
+                    ->visible(fn ($record) => self::emailDomainCheck() && !self::isExcludedUser()),
+            ])
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make()
+                    ->visible(fn () => self::emailDomainCheck() && !self::isExcludedUser()),
             ]);
     }
 

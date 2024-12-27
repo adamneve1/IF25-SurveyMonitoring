@@ -14,6 +14,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Actions\ImportAction;
+use App\Filament\Imports\ManpowerdlImporter;
+
+                       
 
 class ManpowerDlResource extends Resource
 {
@@ -138,6 +142,13 @@ class ManpowerDlResource extends Resource
                             ->visible(fn ($record) => self::isExcludedUser()),
                         Tables\Actions\DeleteAction::make()
                             ->visible(fn ($record) => self::emailDomainCheck() && !self::isExcludedUser()),
+                    ])
+                    ->headerActions([
+                       
+                        ImportAction::make() // Konfigurasi ImportAction
+                            ->importer(ManpowerdlImporter::class)
+                            ->label('Import Data'),
+                      // Tables\Actions\CreateAction::make(),---
                     ])
                     ->bulkActions([
                         Tables\Actions\DeleteBulkAction::make()

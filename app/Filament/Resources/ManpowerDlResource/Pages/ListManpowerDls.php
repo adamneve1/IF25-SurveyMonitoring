@@ -7,7 +7,8 @@ use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Components\Tab;
 use App\Models\Manpower_dl;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder; 
+use Illuminate\Contracts\View\View; // Import View
 
 class ListManpowerDls extends ListRecords
 {
@@ -42,5 +43,23 @@ class ListManpowerDls extends ListRecords
             'civil' => Tab::make('Civil')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('devisi', 'civil')),
         ];
-    }
-}
+  //  }
+
+   //     public function getHeader(): ?View
+    //  {
+    //      $data =  Actions\CreateAction::make();
+    //      return view('filament.pages.upload-file', compact('data'));
+    //  }
+   //   public $file = '';
+
+    ////public function save()
+  //{
+     // Manpower_dl::create([
+       //   'proyek_id' => '1',
+   //       'nama' => 'Rendi',
+    //      'devisi'=> 'PGMT',
+   // //'manpower_idl_id' => '1',
+        
+  //    ]);
+    
+}}

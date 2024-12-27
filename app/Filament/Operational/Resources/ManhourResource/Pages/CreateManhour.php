@@ -10,6 +10,7 @@ use App\Models\Proyek;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -17,7 +18,6 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use Illuminate\Validation\ValidationException;
 
 class CreateManhour extends CreateRecord
 {
@@ -77,69 +77,76 @@ class CreateManhour extends CreateRecord
                 ->label('Remarks'),
 
 
-                 Repeater::make('manhourn')
-                    ->label('Manpower DL')
-                    ->live()
-                    ->schema([
-                        Select::make('manpower_dl_id')
-                            ->label('Manpower DL')
-                            ->searchable()
-                            ->reactive()
-                             ->live()
-                              ->options(function (Get $get) {
-                                $proyekId = $get('../../proyek_id');
-                                 $manpowerIdlId = $get('../../manpower_idl_id');
-                                $selectedIds = collect($get('manhourn') ?? [])
-                                        ->pluck('manpower_dl_id')
-                                        ->filter()
-                                        ->toArray();
+                Repeater::make('manhourn')
+                ->label('Manpower DL')
+                ->live()
+                ->schema([
+                    Select::make('manpower_dl_id')
+                        ->label('Manpower DL')
+                        ->searchable()
+                        ->reactive()
+                         ->live()
+                          ->options(function (Get $get) {
+                            $proyekId = $get('../../proyek_id');
+                             $manpowerIdlId = $get('../../manpower_idl_id');
+                            $selectedIds = collect($get('manhourn') ?? [])
+                                    ->pluck('manpower_dl_id')
+                                    ->filter()
+                                    ->toArray();
 
-                                return Manpower_dl::query()
-                                    ->where('proyek_id', $proyekId)
-                                     ->whereNotNull('nama')
-                                      ->when($manpowerIdlId, function ($query, $manpowerIdlId) {
-                                            return $query->whereHas('manpower_idl', function ($query) use ($manpowerIdlId) {
-                                                $query->where('manpower_idl_id', $manpowerIdlId);
-                                            });
-                                        })
-                                     ->whereNotIn('id', $selectedIds)
-                                    ->pluck('nama', 'id');
-                            })
-                            ->required()
-                            ->placeholder('Pilih Manpower DL'),
+                            return Manpower_dl::query()
+                                ->where('proyek_id', $proyekId)
+                                 ->whereNotNull('nama')
+                                  ->when($manpowerIdlId, function ($query, $manpowerIdlId) {
+                                        return $query->whereHas('manpower_idl', function ($query) use ($manpowerIdlId) {
+                                            $query->where('manpower_idl_id', $manpowerIdlId);
+                                        });
+                                    })
+                                 ->whereNotIn('id', $selectedIds)
+                                ->pluck('nama', 'id');
+                        })
+                        ->required()
+                        ->placeholder('Pilih Manpower DL'),
+                    TimePicker::make('check_in')
+                        ->label('Check In')
+                        ->required()
+                         ->format('H:i'),
+                    TimePicker::make('check_out')
+                        ->label('Check Out')
+                        ->required()
+                        ->format('H:i'),
+                ])
+                ->minItems(1)
+                ->columnSpanFull()
+                ->addActionLabel('Tambah Manpower DL'),
 
-                           TextInput::make('overtime')
-                            ->numeric()
-                            ->required()
-                                   ->label('Overtime Hours'),
-                    ])
-                    ->minItems(1)
-                    ->columnSpanFull()
-                    ->addActionLabel('Tambah Manpower DL'),
-                     
 
-            ]);
+        ]);
+}
+
+ public function save()
+{
+    $get = $this->form->getState();
+     $insert = [];
+    foreach($get['manhourn'] as $row) {
+         $checkIn = Carbon::parse($row['check_in']);
+         $checkOut = Carbon::parse($row['check_out']);
+         $overtime = $checkOut->diffInHours($checkIn);
+         $insert[] = [
+            'proyek_id' => $get['proyek_id'],
+            'manpower_idl_id' => $get['manpower_idl_id'],
+            'manpower_dl_id' => $row['manpower_dl_id'],
+            'tanggal' =>  Carbon::now()->toDateString(),
+            'jam_absen' => $get['jam_absen'],
+            'overtime' => $overtime,
+            'pic' => auth()->user()->name ?? '',
+             'remark' => $get['remarks'],
+            
+         ];
     }
 
-     public function save()
-    {
-        $get = $this->form->getState();
-        $insert = [];
-        foreach($get['manhourn'] as $row) {
-             $insert[] = [
-                'proyek_id' => $get['proyek_id'],
-                'manpower_idl_id' => $get['manpower_idl_id'],
-                'manpower_dl_id' => $row['manpower_dl_id'],
-                'tanggal' => Carbon::now()->toDateString(),
-                'jam_absen' => $get['jam_absen'],
-                'overtime' => $row['overtime'],
-                'pic' => auth()->user()->name ?? '', 
-                'remark' => $get['remarks'],
-             ];
-        }
+   Manhour::insert($insert);
 
-       Manhour::insert($insert);
-
-        return redirect()->to('/operational/manhours');
-    }
+    return redirect()->to('/operational/manhours');
+}
 }

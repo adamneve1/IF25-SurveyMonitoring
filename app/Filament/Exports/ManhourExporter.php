@@ -10,25 +10,23 @@ use Filament\Tables\Columns\TextColumn;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Font;
+use Illuminate\Support\Collection;
 class ManhourExporter extends Exporter
 {
     protected static ?string $model = Manhour::class;
 
     public static function query()
     {
-        // Eager load relationships for the export query
-        return Manhour::with(['proyek', 'manpower_idl', 'manpower_dl']);
+        return Manhour::with(['proyek', 'manpower_idl','manhourn.manpower_dl']);
     }
 
-    public static function getColumns(): array
+      public static function getColumns(): array
     {
         return [
             ExportColumn::make('proyek.nama_proyek')
                 ->label('Nama Proyek'),
-            ExportColumn::make('manpower_idl.nama')
+             ExportColumn::make('manpower_idl.nama')
                 ->label('Manpower IDL'),
-            ExportColumn::make('manpower_dl.nama')
-                ->label('Manpower DL'),
             ExportColumn::make('jam_absen')
                 ->label('Jam Absen'),
             ExportColumn::make('pic')
@@ -36,9 +34,18 @@ class ManhourExporter extends Exporter
             ExportColumn::make('tanggal')
                 ->label('Tanggal'),
             ExportColumn::make('manpower_idl.devisi')
-                ->label('Devisi'),
-            ExportColumn::make('remark')
+                 ->label('Devisi'),
+             ExportColumn::make('remark')
                 ->label('Remark'),
+           ExportColumn::make('overtime')
+                ->label('Overtime'),
+           ExportColumn::make('manhourn')
+                ->label('Manpower DL')
+                 ->formatStateUsing(function ($state){
+                    return collect($state)
+                        ->pluck('manpower_dl.nama')
+                        ->implode(', ');
+                 }),
         ];
     }
     protected function modifySpreadsheet(Spreadsheet $spreadsheet): void
@@ -52,9 +59,12 @@ class ManhourExporter extends Exporter
         $sheet->getColumnDimension('E')->setWidth(100);
         $sheet->getColumnDimension('F')->setWidth(100);
         $sheet->getColumnDimension('G')->setWidth(100);
+        $sheet->getColumnDimension('H')->setWidth(100);
+        $sheet->getColumnDimension('I')->setWidth(100);
 
-        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:I1')->getFont()->setBold(true);
     }
+
 
     public static function getCompletedNotificationBody(Export $export): string
     {

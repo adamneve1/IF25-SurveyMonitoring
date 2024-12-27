@@ -61,9 +61,12 @@ class CreateManhour extends CreateRecord
                         ->pluck('nama', 'id')),
                 
 
-                DatePicker::make('tanggal')
+             
                  
-                    ->default(Carbon::now()),
+           TextInput::make('remarks')
+                    ->required()
+                    ->label('Remarks'),
+    
 
 
                 
@@ -106,6 +109,7 @@ class CreateManhour extends CreateRecord
                     ->minItems(1)
                     ->columnSpanFull()
                     ->addActionLabel('Tambah Manpower DL'),
+                    
                      
 
             ]);
@@ -130,6 +134,6 @@ class CreateManhour extends CreateRecord
 
        Manhour::insert($insert);
 
-        return redirect()->to('/operational/manhours');
+        return redirect()->to('/admin/manhours');
     }
 }

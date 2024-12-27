@@ -12,10 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('manpowers', function (Blueprint $table) {
-            $table->id();
+            $table->id(); 
             $table->foreignId('proyek_id')->constrained('proyeks')->cascadeOnDelete();
-            $table->string('nama');
-            $table->enum('devisi', ['pgmt', 'hvac', 'qa.qc', 'piping', 'scaffolder', 'structure', 'architectural', 'civil']);
+            $table->foreignId('manpower_idl_id')->constrained('manpower_idls')->cascadeOnDelete();
+            $table->foreignId('manpower_dl_id')->constrained('manpower_dls')->cascadeOnDelete();
+            $table->string('pic');
+            $table->date('tanggal');
+            $table->boolean('hadir')->default(true); // Tambahkan kolom 'hadir'
+            $table->text('remark');
+            $table->timestamps();
         });
     }
 
