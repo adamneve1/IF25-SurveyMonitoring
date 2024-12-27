@@ -117,6 +117,6 @@ class CreateManpower extends CreateRecord
           }
         Manpower::insert($insert);
 
-        return redirect()->to('/operational/manpowers');
+        return redirect()->to('/admin/manpowers');
     }
 }

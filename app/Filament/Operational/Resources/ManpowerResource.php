@@ -19,7 +19,7 @@ class ManpowerResource extends Resource
     protected static ?string $model = Manpower::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationLabel = 'Absensi';
+    protected static ?string $navigationLabel = 'Operational Manpower';
     protected static ?string $label = 'Absensi';
   
     

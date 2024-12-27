@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Manhour extends Model
 {
@@ -19,6 +21,7 @@ class Manhour extends Model
         'tanggal',
         'overtime',
         'remark',
+        'hadir',
     ];
 
     public function proyek()
@@ -32,5 +35,10 @@ class Manhour extends Model
     public function manpower_idl()
     {
         return $this->belongsTo(Manpower_idl::class, 'manpower_idl_id');
+    }
+
+    public function manhourn(): BelongsToMany
+    {
+         return $this->belongsToMany(Manpower_dl::class, 'manpower_dl_manhour', 'manhour_id', 'manpower_dl_id')->withPivot(['overtime']);
     }
 }

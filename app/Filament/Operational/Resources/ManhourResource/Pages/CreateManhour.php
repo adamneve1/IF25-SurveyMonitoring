@@ -72,9 +72,9 @@ class CreateManhour extends CreateRecord
 
         
 
-                    TextInput::make('remarks')
-                ->required()
-                ->label('Remarks'),
+                        TextInput::make('remarks')
+                    ->required()
+                    ->label('Remarks'),
 
 
                 Repeater::make('manhourn')
