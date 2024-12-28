@@ -141,6 +141,7 @@ class ManhourResource extends Resource
     {
         return $table
             ->columns([
+                
                 Tables\Columns\TextColumn::make('proyek.nama_proyek')
                     ->label('Proyek')
                     ->sortable(),
@@ -158,9 +159,13 @@ class ManhourResource extends Resource
                 Tables\Columns\TextColumn::make('pic')
                     ->label('PIC')
                     ->sortable(),
+                   
+                
                 Tables\Columns\TextColumn::make('manpower_idl.devisi')
                     ->label('Devisi')
                     ->sortable(),
+                    TextColumn::make('remark')->label('Remarks')
+                    ,
                     ])
                     ->filters([
                         SelectFilter::make('proyek_id')
@@ -184,7 +189,10 @@ class ManhourResource extends Resource
                                 }
                                 return 'Tanggal: ' . Carbon::parse($data['tanggal'])->toFormattedDateString();
                             }),
+                            
+                          
                     ])
+                    
                     ->actions([
                         Tables\Actions\EditAction::make()
                             ->visible(fn ($record) => self::isExcludedUser()),
