@@ -18,6 +18,7 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Filament\Forms\Components\TimePicker;
 class CreateManhour extends CreateRecord
 {
     protected static string $resource = ManhourResource::class;
@@ -69,7 +70,6 @@ class CreateManhour extends CreateRecord
     
 
 
-                
                     Repeater::make('manhourn')
                     ->label('Manpower DL')
                     ->live()
@@ -86,7 +86,7 @@ class CreateManhour extends CreateRecord
                                         ->pluck('manpower_dl_id')
                                         ->filter()
                                         ->toArray();
-
+    
                                 return Manpower_dl::query()
                                     ->where('proyek_id', $proyekId)
                                      ->whereNotNull('nama')
@@ -100,40 +100,46 @@ class CreateManhour extends CreateRecord
                             })
                             ->required()
                             ->placeholder('Pilih Manpower DL'),
-
-                           TextInput::make('overtime')
-                            ->numeric()
+                        TimePicker::make('check_in')
+                            ->label('Check In')
                             ->required()
-                                   ->label('Overtime Hours'),
+                             ->format('H:i'),
+                        TimePicker::make('check_out')
+                            ->label('Check Out')
+                            ->required()
+                            ->format('H:i'),
                     ])
                     ->minItems(1)
                     ->columnSpanFull()
                     ->addActionLabel('Tambah Manpower DL'),
-                    
-                     
-
+    
+    
             ]);
     }
-
+    
      public function save()
     {
         $get = $this->form->getState();
-        $insert = [];
+         $insert = [];
         foreach($get['manhourn'] as $row) {
+             $checkIn = Carbon::parse($row['check_in']);
+             $checkOut = Carbon::parse($row['check_out']);
+             $overtime = $checkOut->diffInHours($checkIn);
              $insert[] = [
                 'proyek_id' => $get['proyek_id'],
                 'manpower_idl_id' => $get['manpower_idl_id'],
                 'manpower_dl_id' => $row['manpower_dl_id'],
-                'tanggal' => Carbon::now()->toDateString(),
+                'tanggal' =>  Carbon::now()->toDateString(),
                 'jam_absen' => $get['jam_absen'],
-                'overtime' => $row['overtime'],
-                'pic' => auth()->user()->name ?? '', 
-                'remark' => $get['remarks'],
+                'overtime' => $overtime,
+                'pic' => auth()->user()->name ?? '',
+                 'remark' => $get['remarks'],
+                
              ];
         }
-
+    
        Manhour::insert($insert);
-
+    
         return redirect()->to('/admin/manhours');
     }
-}
+    }

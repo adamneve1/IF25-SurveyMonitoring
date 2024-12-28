@@ -22,6 +22,7 @@ return new class extends Migration
             $table->unsignedInteger('overtime');
             $table->text('remark');
             $table->timestamps();
+            
         });
     }
 
