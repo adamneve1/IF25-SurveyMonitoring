@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Manhour extends Model
 {
     use HasFactory;
+    public $timestamps = true; 
     protected $table = 'manhours';
 
     protected $fillable = [
