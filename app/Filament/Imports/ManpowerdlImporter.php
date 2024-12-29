@@ -16,24 +16,27 @@ class ManpowerdlImporter extends Importer
     public static function getColumns(): array
     {
         return [
-            ImportColumn::make('nama')
-                ->label('Nama Manpower DL')
-                ->rules(['required', 'string', 'max:255']),
             ImportColumn::make('proyek')
-                 ->label('Proyek')
+                ->label('Nama Proyek')
                 ->rules(['required', 'exists:proyeks,nama_proyek'])
-                 ->relationship(resolveUsing: function (string $state): ?Proyek {
+                ->relationship(resolveUsing: function (string $state): ?Proyek {
                     return Proyek::query()->where('nama_proyek', $state)->first();
-                  }),
-             ImportColumn::make('devisi')
-                 ->label('Devisi')
-                 ->rules(['required','in:pgmt,hvac,qa.qc,piping,scaffolder,structure,architectural,civil']),
-             ImportColumn::make('manpower_idl')
-               ->label('Manpower IDL')
-                ->rules(['required', 'exists:manpower_idls,nama'])
-               ->relationship(resolveUsing: function (string $state): ?Manpower_idl {
-                    return Manpower_idl::query()->where('nama', $state)->first();
                 }),
+            ImportColumn::make('manpower_idl')
+                ->label('Manpower IDL')
+                ->rules(['required', 'exists:manpower_idls,nama'])
+                ->relationship(resolveUsing: function (string $state): ?Manpower_idl {
+                    return Manpower_idl::query()
+                        ->where('nama', $state)
+                        ->first();
+                }),
+            ImportColumn::make('nama')
+                ->label('Manpower DL')
+                ->rules(['required', 'string', 'max:255']),
+            ImportColumn::make('devisi')
+                ->label('Devisi')
+                ->rules(['required','in:pgmt,hvac,qa.qc,piping,scaffolder,structure,architectural,civil']),
+
         ];
     }
 
@@ -41,20 +44,20 @@ class ManpowerdlImporter extends Importer
     {
         return new Manpower_dl();
     }
-     protected function beforeValidate(): void
-    {
+    // protected function beforeValidate(): void
+    // {
     
-        if (isset($this->data['proyek'])) {
-            $proyek = Proyek::query()->where('nama_proyek', $this->data['proyek'])->first();
-            $this->data['proyek_id'] = $proyek?->id;
-        }
-         if (isset($this->data['manpower_idl'])) {
-             $manpowerIdl = Manpower_idl::query()->where('nama', $this->data['manpower_idl'])->first();
-             $this->data['manpower_idl_id'] = $manpowerIdl?->id;
-         }
-        unset($this->data['proyek'], $this->data['manpower_idl']);
-       
-    }
+    //     if (isset($this->data['proyek'])) {
+    //         $proyek = Proyek::query()->where('nama_proyek', $this->data['proyek'])->first();
+    //         $this->data['proyek_id'] = $proyek?->id;
+    //     }
+    //     if (isset($this->data['manpower_idl'])) {
+    //         $manpowerIdl = Manpower_idl::query()->where('nama', $this->data['manpower_idl'])->first();
+    //         $this->data['manpower_idl_id'] = $manpowerIdl?->id;
+    //     }
+    //     unset($this->data['proyek'], $this->data['manpower_idl']);
+        
+    // }
 
 
     public static function getCompletedNotificationBody(Import $import): string

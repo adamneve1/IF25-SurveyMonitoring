@@ -75,7 +75,7 @@ class ManpowerDlResource extends Resource
                     ->placeholder('Pilih Proyek')
                     ->native(false)
                     ->label('Proyek'),
-                  Forms\Components\Select::make('manpower_idl_id')
+                Forms\Components\Select::make('manpower_idl_id')
                     ->relationship('manpower_idl', 'nama')
                     ->required()
                     ->placeholder('Pilih Manpower IDL')
@@ -125,7 +125,7 @@ class ManpowerDlResource extends Resource
                             ->indicator('Proyek'),
                         SelectFilter::make('devisi')
                             ->label('Filter By Devisi')
-                             ->options([
+                            ->options([
                                 'pgmt' => 'PGMT',
                                 'hvac' => 'HVAC',
                                 'qa.qc' => 'QA/QC',
@@ -144,7 +144,7 @@ class ManpowerDlResource extends Resource
                             ->visible(fn ($record) => self::emailDomainCheck() && !self::isExcludedUser()),
                     ])
                     ->headerActions([
-                       
+                    
                         ImportAction::make() // Konfigurasi ImportAction
                             ->importer(ManpowerdlImporter::class)
                             ->label('Import Data'),

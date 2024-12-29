@@ -72,10 +72,10 @@ class ManhourResource extends Resource
     {
         return $form
             ->schema([
-                  Forms\Components\Select::make('proyek_id')
+                Forms\Components\Select::make('proyek_id')
                     ->options(Proyek::all()->pluck('nama_proyek','id'))
                     ->label('Proyek')
-                      ->native(false)
+                    ->native(false)
                     ->live()
                     ->placeholder('Pilih Proyek')
                     ->required(),
@@ -106,7 +106,7 @@ class ManhourResource extends Resource
                     ->reactive()
                     ->placeholder('Manpower IDL')
                     ->searchable()
-                   ->options(fn(Get $get) => Manpower_idl::query()
+                    ->options(fn(Get $get) => Manpower_idl::query()
                         ->where('proyek_id', $get('proyek_id'))
                         ->pluck('nama', 'id'))
                     ->default(function(){
@@ -115,7 +115,7 @@ class ManhourResource extends Resource
                             $manpowerIdl = Manpower_idl::where('nama', $user->name)->first();
                                 return $manpowerIdl ? $manpowerIdl->id : null;
                         }
-                         return null;
+                        return null;
                     }),
                 Forms\Components\DatePicker::make('tanggal')
                     ->required()
@@ -159,7 +159,7 @@ class ManhourResource extends Resource
                 Tables\Columns\TextColumn::make('pic')
                     ->label('PIC')
                     ->sortable(),
-                   
+                
                 
                 Tables\Columns\TextColumn::make('manpower_idl.devisi')
                     ->label('Devisi')
@@ -190,7 +190,7 @@ class ManhourResource extends Resource
                                 return 'Tanggal: ' . Carbon::parse($data['tanggal'])->toFormattedDateString();
                             }),
                             
-                          
+                        
                     ])
                     
                     ->actions([
@@ -202,7 +202,7 @@ class ManhourResource extends Resource
                     ->headerActions([
                         ExportAction::make()->exporter(ManhourExporter::class)
                             ->label('Export Data'),
-                        ImportAction::make() // Konfigurasi ImportAction
+                        ImportAction::make()
                             ->importer(ManhourImporter::class)
                             ->label('Import Data'),
                     ])
