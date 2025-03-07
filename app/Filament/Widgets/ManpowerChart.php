@@ -3,14 +3,9 @@
 namespace App\Filament\Widgets;
 
 use Filament\Widgets\ChartWidget;
-use Flowframe\Trend\Trend;
-use Flowframe\Trend\TrendValue;
 use App\Models\Manpower;
-use App\Models\Manhour;
 use Carbon\Carbon;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Builder;
 
 class ManpowerChart extends ChartWidget
 {
@@ -42,7 +37,7 @@ class ManpowerChart extends ChartWidget
          $labels = $query->map(function ($item){
             return Carbon::parse($item->tanggal)->format('Y-m-d');
         });
-    
+
 
         return [
             'datasets' => [

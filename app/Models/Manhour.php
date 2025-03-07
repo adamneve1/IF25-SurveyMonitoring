@@ -38,7 +38,7 @@ class Manhour extends Model
         return $this->belongsTo(Manpower_idl::class);
     }
 
-    public function manhourn(): BelongsToMany
+    public function manhour(): BelongsToMany
     {
          return $this->belongsToMany(Manpower_dl::class, 'manpower_dl_manhour', 'manhour_id', 'manpower_dl_id')->withPivot(['overtime']);
     }
