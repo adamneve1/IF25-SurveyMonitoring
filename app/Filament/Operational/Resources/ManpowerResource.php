@@ -91,6 +91,9 @@ class ManpowerResource extends Resource
                 TextColumn::make('manpower_idl.devisi')
                     ->label('Devisi')
                     ->sortable(),
+                TextColumn::make('tanggal')
+                    ->label('Tanggal')
+                    ->sortable(),
                   TextColumn::make('remark')
                      ->label('Remarks')
                     ->sortable(),

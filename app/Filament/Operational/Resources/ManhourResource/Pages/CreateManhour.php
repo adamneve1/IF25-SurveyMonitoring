@@ -148,5 +148,5 @@ class CreateManhour extends CreateRecord
    Manhour::insert($insert);
 
     return redirect()->to('/operational/manhours');
-}
+    }
 }
