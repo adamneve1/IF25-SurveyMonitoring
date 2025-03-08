@@ -21,6 +21,7 @@ class ManpowerResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
     protected static ?string $navigationLabel = 'Absensi';
     protected static ?string $label = 'Absensi';
+    protected static ?string $navigationUrl = '/operational/manpower/create';
   
     
      public static function canCreate(): bool
@@ -133,11 +134,15 @@ class ManpowerResource extends Resource
         ];
     }
 
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListManpowers::route('/'),
+    
+
+
+public static function getPages(): array
+{
+    return [
+        // ✅ Ubah halaman index langsung ke create
+        'index' => Pages\CreateManpower::route('/'),
             'create' => Pages\CreateManpower::route('/create'),
-        ];
-    }
+    ];
+}
 }

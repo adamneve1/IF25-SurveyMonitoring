@@ -20,6 +20,7 @@ use App\Filament\Imports\ManhourImporter;
 class ManhourResource extends Resource
 {
     protected static ?string $model = Manhour::class;
+    protected static ?string $navigationUrl = '/operational/manhours/create';
 
     protected static ?string $navigationIcon = 'heroicon-o-user-plus';
     protected static ?string $navigationLabel = 'Overtime (Manhour)';
@@ -133,7 +134,7 @@ class ManhourResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListManhours::route('/'),
+            'index' => Pages\CreateManhour::route('/'),
             'create' => Pages\CreateManhour::route('/create'),
             // Remove 'edit' page so records can't be edited
         ];
