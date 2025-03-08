@@ -15,5 +15,12 @@ class Divisi extends Model
       'name', 'reference'
     ];
 
-
+    public function manpower_idl()
+    {
+        return $this->hasMany(Manpower_idl::class, 'proyek_id');
+    }
+    public function manpower_dl()
+    {
+        return $this->hasMany(Manpower_dl::class, 'proyek_id');
+    }
 }

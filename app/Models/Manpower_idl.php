@@ -15,7 +15,8 @@ class Manpower_idl extends Model
     protected $fillable = [
         'nama',
         'proyek_id',
-        'devisi'
+        'devisi',
+        'divisi_id'
     ];
 
     public function manhours()
@@ -25,5 +26,9 @@ class Manpower_idl extends Model
     public function proyek()
     {
         return $this->belongsTo(Proyek::class);
+    }
+    public function divisi_id()
+    {
+        return $this->belongsTo(Divisi::class, 'divisi_id');
     }
 }

@@ -21,8 +21,8 @@ class ManpowerResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
     protected static ?string $navigationLabel = 'Absensi';
     protected static ?string $label = 'Absensi';
-  
-    
+
+
      public static function canCreate(): bool
     {
         return self::emailDomainCheck() && !self::isExcludedUser();
