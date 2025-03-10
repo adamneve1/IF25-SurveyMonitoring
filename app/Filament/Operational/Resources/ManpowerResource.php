@@ -133,11 +133,15 @@ class ManpowerResource extends Resource
         ];
     }
 
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListManpowers::route('/'),
+    
+
+
+public static function getPages(): array
+{
+    return [
+        // ✅ Ubah halaman index langsung ke create
+        'index' => Pages\CreateManpower::route('/'),
             'create' => Pages\CreateManpower::route('/create'),
-        ];
-    }
+    ];
+}
 }

@@ -14,43 +14,50 @@ class ManpowerChart extends ChartWidget
     protected static ?string $heading = 'Manpower';
 
     protected function getData(): array
-    {
-       $proyek = $this->filters['proyek_id'] ?? null;
-        $start = $this->filters['start'];
-        $end = $this->filters['end'];
+{
+    $proyek = $this->filters['proyek_id'] ?? null;
+    $start = $this->filters['start'];
+    $end = $this->filters['end'];
 
-           $query = Manpower::query()
-            ->selectRaw('DATE(tanggal) as tanggal, count(id) as total_hadir')
-            ->when($proyek, function ($query, $proyek) {
-                return $query->where('proyek_id', $proyek);
-            })
-           ->where('hadir', 1)
-            ->when($start, function ($query, $start) {
-                return $query->where('tanggal', '>=', Carbon::parse($start));
-            })
-             ->when($end, function ($query, $end) {
-                return $query->where('tanggal', '<=', Carbon::parse($end));
-            })
-           ->groupBy('tanggal')
-           ->orderBy('tanggal')
-          ->get();
-         $labels = $query->map(function ($item){
-            return Carbon::parse($item->tanggal)->format('Y-m-d');
-        });
+    // Query untuk Manpower
+    $manpowerQuery = \App\Models\Manpower::query()
+        ->selectRaw('DATE(tanggal) as tanggal, COUNT(id) as total_hadir')
+        ->where('hadir', 1)
+        ->when($proyek, fn ($q) => $q->where('proyek_id', $proyek))
+        ->when($start, fn ($q) => $q->where('tanggal', '>=', Carbon::parse($start)))
+        ->when($end, fn ($q) => $q->where('tanggal', '<=', Carbon::parse($end)))
+        ->groupBy('tanggal');
 
+    // Query untuk Manpower IDL
+    $manpowerIdlQuery = \App\Models\ManpowerIdlAbsensi::query()
+        ->selectRaw('DATE(tanggal) as tanggal, COUNT(id) as total_hadir')
+        ->where('hadir', 1)
+        ->when($proyek, fn ($q) => $q->where('proyek_id', $proyek))
+        ->when($start, fn ($q) => $q->where('tanggal', '>=', Carbon::parse($start)))
+        ->when($end, fn ($q) => $q->where('tanggal', '<=', Carbon::parse($end)))
+        ->groupBy('tanggal');
 
-        return [
-            'datasets' => [
-                [
-                    'label' => 'Jumlah Manpower Hadir',
-                     'data' => $query->map(fn ($item) => $item->total_hadir),
-                    'borderColor' => '#4CAF50',
-                    'backgroundColor' => '#4CAF50',
-                ],
+    // Gabungkan kedua query
+    $query = $manpowerQuery->unionAll($manpowerIdlQuery)->get();
+
+    // Hitung total hadir per tanggal
+    $data = collect($query)->groupBy('tanggal')->map(function ($items) {
+        return $items->sum('total_hadir');
+    });
+
+    return [
+        'datasets' => [
+            [
+                'label' => 'Total Kehadiran Manpower & Manpower IDL',
+                'data' => $data->values(),
+                'borderColor' => '#4CAF50',
+                'backgroundColor' => '#4CAF50',
             ],
-            'labels' =>  $labels,
-        ];
-    }
+        ],
+        'labels' => $data->keys(),
+    ];
+}
+
 
     protected function getType(): string
     {

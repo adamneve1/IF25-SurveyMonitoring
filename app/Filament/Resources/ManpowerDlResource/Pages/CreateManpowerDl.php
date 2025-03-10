@@ -12,6 +12,9 @@ use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Validation\ValidationException;
+use App\Models\Proyek;
+use App\Models\Manpower_idl;
+
 
 class CreateManpowerDl extends CreateRecord
 {
@@ -27,19 +30,26 @@ class CreateManpowerDl extends CreateRecord
     public function form(Form $form): Form
     {
         return $form
-            ->schema([
-                Select::make('proyek_id')
-                    ->relationship('proyek', 'nama_proyek')
-                    ->required()
-                    ->placeholder('Pilih Proyek')
-                    ->native(false)
-                    ->label('Proyek'),
-              Select::make('manpower_idl_id')
-                    ->relationship('manpower_idl', 'nama')
-                    ->required()
-                    ->placeholder('Pilih Manpower IDL')
-                    ->native(false)
-                    ->label('Manpower IDL'),
+        ->schema([
+            Select::make('proyek_id')
+                ->label('Proyek')
+                ->options(Proyek::query()
+                    ->whereNotNull('nama_proyek')
+                    ->pluck('nama_proyek', 'id'))
+                ->native(false)
+                ->reactive()
+                ->required(),
+
+            Select::make('manpower_idl_id')
+                ->label('Manpower IDL')
+                ->options(fn ($get) => Manpower_idl::query()
+                    ->where('proyek_id', $get('proyek_id'))
+                    ->whereNotNull('nama')
+                    ->pluck('nama', 'id'))
+                ->native(false)
+                ->searchable()
+                ->reactive()
+                ->required(),
                 Select::make('devisi')
                     ->options([
                         'pgmt' => 'PGMT',

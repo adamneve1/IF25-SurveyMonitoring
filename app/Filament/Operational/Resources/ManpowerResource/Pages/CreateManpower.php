@@ -13,7 +13,8 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\checkbox;
+use Filament\Forms\Components\toggle;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Section;
@@ -23,12 +24,12 @@ use Filament\Forms\Get;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-
+use App\Models\ManpowerIdlAbsensi;
 
 class CreateManpower extends CreateRecord
 {
     protected static string $resource = ManpowerResource::class;
-    protected static string $view = 'filament.pages.form-manppour';
+    protected static string $view = 'filament.pages.form-manppour   ';
     
 
     // Metode ini mengatur URL redirect setelah data berhasil disimpan
@@ -123,7 +124,7 @@ class CreateManpower extends CreateRecord
                                     Toggle::make("manpowern.{$manpower->id}.is_present")
                                         ->label('Hadir')
                                         ->default(true)
-                                        ->columnSpan(1)
+                                        ->columnSpan(2)
                                         ->inline(false)
                                 ])
                             )->toArray()
@@ -138,24 +139,39 @@ class CreateManpower extends CreateRecord
             ]);
                     
     }
-     public function save()
+    public function save()
     {
         $get = $this->form->getState();
-         $insert = [];
-         foreach ($get['manpowern'] as $row) {
-             $insert[] = [
-                'proyek_id' => $get['proyek_id'],
-                'manpower_idl_id' => $get['manpower_idl_id'],
-                'manpower_dl_id' => $row['manpower_dl_id'],
-                'tanggal' => Carbon::now()->toDateString(),
-                'pic' => auth()->user()->name ?? '',
-                'remark' => $get['remarks'],
-                'hadir' => $row['is_present'] === true ? 1 : 0,
-            ];
-          }
-        Manpower::insert($insert);
-
+        $insert = [];
+    
+        // Cek apakah ada data manpower DL yang diinput
+        if (!empty($get['manpowern'])) {
+            foreach ($get['manpowern'] as $row) {
+                $insert[] = [
+                    'proyek_id' => $get['proyek_id'],
+                    'manpower_idl_id' => $get['manpower_idl_id'],
+                    'manpower_dl_id' => $row['manpower_dl_id'],
+                    'tanggal' => Carbon::now()->toDateString(),
+                    'pic' => auth()->user()->name ?? '',
+                    'remark' => $get['remarks'],
+                    'hadir' => $row['is_present'] === true ? 1 : 0,
+                ];
+            }
+    
+            // Simpan ke tabel Manpower DL jika ada data DL yang dikirim
+            Manpower::insert($insert);
+        }
+    
+        // Simpan Data Absensi untuk Manpower IDL
+        ManpowerIdlAbsensi::create([
+            'proyek_id' => $get['proyek_id'],
+            'manpower_idl_id' => $get['manpower_idl_id'],
+            'tanggal' => Carbon::now()->toDateString(),
+            'hadir' => 1, // Manpower IDL otomatis hadir
+            'remark' => $get['remarks'],
+        ]);
+    
         return redirect()->to('/operational/manpowers');
     }
-}
-
+    
+}    
