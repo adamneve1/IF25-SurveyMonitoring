@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::table('manpower_dls', function (Blueprint $table) {
             $table->dropColumn('devisi');
-            $table->foreignId('divisi_id')->nullable()->constrained('divisi')->onDelete('set null');
+            $table->foreignId('divisi_id')->nullable()->constrained('divisi')->cascadeOnDelete();
         });
         Schema::table('manpower_idls', function (Blueprint $table) {
             $table->dropColumn('devisi');
-            $table->foreignId('divisi_id')->nullable()->constrained('divisi')->onDelete('set null');
+            $table->foreignId('divisi_id')->nullable()->constrained('divisi')->cascadeOnDelete();
         });
     }
 
