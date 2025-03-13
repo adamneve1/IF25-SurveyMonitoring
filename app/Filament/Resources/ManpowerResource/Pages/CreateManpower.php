@@ -119,16 +119,14 @@ class CreateManpower extends CreateRecord
                                     ->options([$manpower->id => $manpower->nama]) // Read-only dropdown
                                     ->default($manpower->id),
 
-
-
                                     Toggle::make("manpowern.{$manpower->id}.is_present")
-                                        ->label('Hadir')
-                                        ->default(true)
-                                        ->columnSpan(1)
-                                        ->inline(false)
-                                ])
-                            )->toArray()
-                        )
+                                    ->label('Hadir')
+                                    ->default(true)
+                                    ->columnSpan(2)
+                                    ->inline(false)
+                            ])
+                        )->toArray()
+                    )
                         ->extraAttributes(['class' => 'p-4 bg-white rounded-lg shadow']),
                 ];
             })
