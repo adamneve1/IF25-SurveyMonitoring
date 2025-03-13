@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ManpowerDlResource\Pages;
 
 use App\Filament\Resources\ManpowerDlResource;
+use App\Models\Divisi;
 use App\Models\Manpower_dl;
 use Filament\Actions;
 use Filament\Forms\Components\Repeater;
@@ -39,7 +40,6 @@ class CreateManpowerDl extends CreateRecord
                 ->native(false)
                 ->reactive()
                 ->required(),
-
             Select::make('manpower_idl_id')
                 ->label('Manpower IDL')
                 ->options(fn ($get) => Manpower_idl::query()
@@ -50,42 +50,49 @@ class CreateManpowerDl extends CreateRecord
                 ->searchable()
                 ->reactive()
                 ->required(),
-                Select::make('devisi')
-                    ->options([
-                        'pgmt' => 'PGMT',
-                        'hvac' => 'HVAC',
-                        'qa.qc' => 'QA/QC',
-                        'piping' => 'Piping',
-                        'scaffolder' => 'Scaffolder',
-                        'structure' => 'Structure',
-                        'architectural' => 'Architectural',
-                        'civil' => 'Civil',
-                    ])
+            // Select::make('devisi')
+            //     ->options([
+            //         'pgmt' => 'PGMT',
+            //         'hvac' => 'HVAC',
+            //         'qa.qc' => 'QA/QC',
+            //         'piping' => 'Piping',
+            //         'scaffolder' => 'Scaffolder',
+            //         'structure' => 'Structure',
+            //         'architectural' => 'Architectural',
+            //         'civil' => 'Civil',
+            //     ])
+            //     ->required()
+            //     ->placeholder('Pilih Devisi')
+            //     ->native(false)
+            //     ->label('Devisi'),
+            Select::make('divisi_id')
+                ->label('Divisi')
+                ->options(Divisi::query()
+                    ->whereNotNull('name')
+                    ->pluck('name', 'id'))
+                ->native(false)
+                ->reactive()
+                ->required(),
+            Repeater::make('nama_manpower_dls')
+                ->label('Nama Manpower DL')
+                ->columnSpanFull() // Memenuhi lebar kolom
+                ->grid(columns: 1)  // Mengatur grid menjadi 3 kolom
+                ->itemLabel(fn (array $state): ?string => $state['nama'] ?? null)
+                ->schema([
+                    TextInput::make('nama')
                     ->required()
-                    ->placeholder('Pilih Devisi')
-                    ->native(false)
-                    ->label('Devisi'),
-                Repeater::make('nama_manpower_dls')
+                    ->placeholder('Nama Manpower DL')
                     ->label('Nama Manpower DL')
-                    ->columnSpanFull() // Memenuhi lebar kolom
-                     ->grid(1)  // Mengatur grid menjadi 3 kolom
-                     ->itemLabel(fn (array $state): ?string => $state['nama'] ?? null)
-                    ->schema([
-                        TextInput::make('nama')
-                        ->required()
-                        ->placeholder('Nama Manpower DL')
-                        ->label('Nama Manpower DL')
-                         ->afterStateUpdated(function ($state, $set, $get) {
-                              $selectedNames = collect($get('../../nama_manpower_dls') ?? [])
-                                      ->pluck('nama')
-                                      ->filter()
-                                      ->toArray();
-                                 if (count(array_keys($selectedNames, $state)) > 1) {
-                                   throw ValidationException::withMessages(['nama' => 'Nama Manpower DL tidak boleh duplikat.']);
-                              }
-                         })
-                        ->columnSpanFull()
-                  ,
+                        ->afterStateUpdated(function ($state, $set, $get) {
+                            $selectedNames = collect($get('../../nama_manpower_dls') ?? [])
+                                    ->pluck('nama')
+                                    ->filter()
+                                    ->toArray();
+                                if (count(array_keys($selectedNames, $state)) > 1) {
+                                throw ValidationException::withMessages(['nama' => 'Nama Manpower DL tidak boleh duplikat.']);
+                            }
+                        })
+                    ->columnSpanFull(),
                     ])
                     ->addActionLabel('Tambah Manpower DL'),
             ]);
@@ -98,7 +105,8 @@ class CreateManpowerDl extends CreateRecord
         foreach ($get['nama_manpower_dls'] as $row) {
             $insert[] = [
                 'proyek_id' => $get['proyek_id'],
-                'devisi' => $get['devisi'],
+                // 'devisi' => $get['devisi'],
+                'divisi_id' => $get['divisi_id'],
                 'manpower_idl_id' => $get['manpower_idl_id'],
                 'nama' => $row['nama'],
             ];

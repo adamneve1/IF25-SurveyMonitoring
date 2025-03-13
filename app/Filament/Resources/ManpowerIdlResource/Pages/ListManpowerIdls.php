@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ManpowerIdlResource\Pages;
 
 use App\Filament\Resources\ManpowerIdlResource;
+use App\Models\Divisi;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Components\Tab;
@@ -21,25 +22,18 @@ class ListManpowerIdls extends ListRecords
     
     public function getTabs(): array
     {
-        return [
+        $tabs = [
             'semua' => Tab::make('Semua')
                 ->modifyQueryUsing(fn (Builder $query) => $query),
-            'pgmt' => Tab::make('PGMT')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('devisi', 'pgmt')),
-            'hvac' => Tab::make('HVAC')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('devisi', 'hvac')),
-             'qa.qc' => Tab::make('QA/QC')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('devisi', 'qa.qc')),
-            'piping' => Tab::make('Piping')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('devisi', 'piping')),
-            'scaffolder' => Tab::make('Scaffolder')
-                 ->modifyQueryUsing(fn (Builder $query) => $query->where('devisi', 'scaffolder')),
-             'structure' => Tab::make('Structure')
-                 ->modifyQueryUsing(fn (Builder $query) => $query->where('devisi', 'structure')),
-            'architectural' => Tab::make('Architectural')
-                 ->modifyQueryUsing(fn (Builder $query) => $query->where('devisi', 'architectural')),
-            'civil' => Tab::make('Civil')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('devisi', 'civil')),
         ];
+    
+        $divisiList = Divisi::pluck('name');
+        foreach ($divisiList as $divisi)
+        {
+            $tabs[$divisi] = Tab::make(strtoupper($divisi))
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereHas('divisi', fn ($q) => $q->where('name', $divisi)));
+        }
+
+        return $tabs;
     }
 }

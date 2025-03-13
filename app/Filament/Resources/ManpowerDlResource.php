@@ -112,31 +112,33 @@ class ManpowerDlResource extends Resource
                 Tables\Columns\TextColumn::make('proyek.nama_proyek')
                     ->label('Proyek')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('devisi')
-                    ->label('Devisi')
+                // Tables\Columns\TextColumn::make('devisi')
+                //     ->label('Devisi')
+                //     ->sortable(),
+                Tables\Columns\TextColumn::make('divisi.name')
+                    ->label('Divisi')
                     ->sortable(),
-
                     ])
-                    ->filters([
-                        SelectFilter::make('proyek_id')
-                            ->label('Filter By Proyek')
-                            ->relationship('proyek', 'nama_proyek')
-                            ->preload()
-                            ->indicator('Proyek'),
-                        SelectFilter::make('devisi')
-                            ->label('Filter By Devisi')
-                            ->options([
-                                'pgmt' => 'PGMT',
-                                'hvac' => 'HVAC',
-                                'qa.qc' => 'QA/QC',
-                                'piping' => 'Piping',
-                                'scaffolder' => 'Scaffolder',
-                                'structure' => 'Structure',
-                                'architectural' => 'Architectural',
-                                'civil' => 'Civil',
-                            ])
-                            ->indicator('Devisi'),
-                    ])
+                ->filters([
+                    SelectFilter::make('proyek_id')
+                        ->label('Filter By Proyek')
+                        ->relationship('proyek', 'nama_proyek')
+                        ->preload()
+                        ->indicator('Proyek'),
+                    SelectFilter::make('devisi')
+                        ->label('Filter By Devisi')
+                        ->options([
+                            'pgmt' => 'PGMT',
+                            'hvac' => 'HVAC',
+                            'qa.qc' => 'QA/QC',
+                            'piping' => 'Piping',
+                            'scaffolder' => 'Scaffolder',
+                            'structure' => 'Structure',
+                            'architectural' => 'Architectural',
+                            'civil' => 'Civil',
+                        ])
+                        ->indicator('Devisi'),
+                ])
                     ->actions([
                         Tables\Actions\EditAction::make()
                             ->visible(fn ($record) => self::isExcludedUser()),

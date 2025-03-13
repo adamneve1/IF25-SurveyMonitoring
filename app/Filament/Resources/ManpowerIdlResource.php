@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ManpowerIdlResource\Pages;
 use App\Filament\Resources\ManpowerIdlResource\RelationManagers;
+use App\Models\Divisi;
 use App\Models\Manpower_idl;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -71,20 +72,28 @@ class ManpowerIdlResource extends Resource
                     ->required()
                     ->native(false)
                     ->label('Proyek'),
-                Forms\Components\Select::make('devisi')
-                    ->options([
-                        'pgmt' => 'PGMT',
-                        'hvac' => 'HVAC',
-                        'qa.qc' => 'QA/QC',
-                        'piping' => 'Piping',
-                        'scaffolder' => 'Scaffolder',
-                        'structure' => 'Structure',
-                        'architectural' => 'Architectural',
-                        'civil' => 'Civil',
-                    ])
-                    ->required()
+                Forms\Components\Select::make('divisi_id')
+                    ->label('Divisi')
+                    ->options(Divisi::query()
+                        ->whereNotNull('name')
+                        ->pluck('name', 'id'))
                     ->native(false)
-                    ->label('Devisi'),
+                    ->reactive()
+                    ->required(),
+                // Forms\Components\Select::make('devisi')
+                //     ->options([
+                //         'pgmt' => 'PGMT',
+                //         'hvac' => 'HVAC',
+                //         'qa.qc' => 'QA/QC',
+                //         'piping' => 'Piping',
+                //         'scaffolder' => 'Scaffolder',
+                //         'structure' => 'Structure',
+                //         'architectural' => 'Architectural',
+                //         'civil' => 'Civil',
+                //     ])
+                //     ->required()
+                //     ->native(false)
+                //     ->label('Devisi'),
             ]);
     }
     
@@ -100,18 +109,21 @@ class ManpowerIdlResource extends Resource
                 Tables\Columns\TextColumn::make('proyek.nama_proyek')
                     ->label('Proyek')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('devisi')
-                    ->label('Devisi')
+                Tables\Columns\TextColumn::make('divisi.name')
+                    ->label('Divisi')
                     ->sortable(),
+                // Tables\Columns\TextColumn::make('devisi')
+                //     ->label('Devisi')
+                //     ->sortable(),
                     
             ])
-             ->filters([
+            ->filters([
                 SelectFilter::make('proyek_id')
                     ->label('Filter By Proyek')
                     ->relationship('proyek', 'nama_proyek')
                     ->preload()
                     ->indicator('Proyek'),
-                 ])
+                ])
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->visible(fn ($record) => self::isExcludedUser()),
