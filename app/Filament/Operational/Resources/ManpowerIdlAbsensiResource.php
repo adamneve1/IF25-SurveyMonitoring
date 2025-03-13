@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Operational\Resources;
+
 
 use App\Filament\Operational\Resources\ManpowerIdlAbsensiResource\Pages;
 use App\Models\ManpowerIdlAbsensi;
@@ -18,6 +18,8 @@ class ManpowerIdlAbsensiResource extends Resource
     protected static ?string $navigationLabel = 'Absensi IDL';    
     protected static ?string $label = 'Absensi IDL';
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
+    protected static bool $isHidden = true;
+
 
     // ✅ Sidebar langsung mengarah ke halaman create (HARUS public)
     public static function getNavigationUrl(): string

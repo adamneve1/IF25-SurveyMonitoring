@@ -12,6 +12,10 @@ use Filament\Tables\Table;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\DateFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\DatePicker;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
 class ManpowerResource extends Resource
@@ -104,6 +108,10 @@ class ManpowerResource extends Resource
                     TextColumn::make('remark')
                     ->label('Remarks')
                     ->sortable(),
+                    TextColumn::make('tanggal')
+                    ->label('Tanggal')
+                    ->date()
+                    ->sortable(),
                 
             ])
             ->filters([
@@ -125,6 +133,28 @@ class ManpowerResource extends Resource
                         'civil' => 'Civil',
                     ])
                     ->indicator('Devisi'),
+             
+            // Filter berdasarkan Tanggal
+            Filter::make('tanggal')
+            ->label('Filter By Tanggal')
+            ->form([
+                DatePicker::make('start_date')
+                    ->label('Start Date')
+                    ->required(),
+
+                DatePicker::make('end_date')
+                    ->label('End Date')
+                    ->required(),
+            ])
+            ->query(function (Builder $query, array $data) {
+                // Pastikan kedua tanggal tersedia
+                if (isset($data['start_date']) && isset($data['end_date'])) {
+                    return $query->whereBetween('tanggal', [$data['start_date'], $data['end_date']]);
+                }
+
+                return $query;
+            }),
+        
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
@@ -135,7 +165,8 @@ class ManpowerResource extends Resource
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make()
                     ->visible(fn () => self::emailDomainCheck() && !self::isExcludedUser()),
-            ]);
+            ])
+            ->defaultSort('tanggal', 'desc'); 
     }
 
     public static function getRelations(): array

@@ -6,7 +6,9 @@ use Filament\Widgets\ChartWidget;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 use App\Models\Manhour;
+use App\Models\Proyek; // Tambahkan Model Proyek
 use Carbon\Carbon;
+use App\Models\ProyekPlan; // Import model ProyekPlan
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class ManhourChart extends ChartWidget
@@ -19,16 +21,16 @@ class ManhourChart extends ChartWidget
 
     protected function getData(): array
     {
-        $proyek = $this->filters['proyek_id'] ?? null;
+        $proyekId = $this->filters['proyek_id'] ?? null;
         $start = $this->filters['start'];
         $end = $this->filters['end'];
 
-        // Query data dengan filter proyek dan hanya ambil data yang memiliki 'tanggal'
+        // Ambil Data Overtime
         $query = Manhour::query()
-            ->when($proyek, function ($query, $proyek) {
-                return $query->where('proyek_id', $proyek);
+            ->when($proyekId, function ($query, $proyekId) {
+                return $query->where('proyek_id', $proyekId);
             })
-            ->whereNotNull('tanggal'); // Pastikan tanggal tidak null
+            ->whereNotNull('tanggal');
 
         $dataOvertime = Trend::query($query)
             ->between(
@@ -36,15 +38,25 @@ class ManhourChart extends ChartWidget
                 end: $end ? Carbon::parse($end) : now(),
             )
             ->perMonth()
-            ->dateColumn('tanggal') // Pakai kolom `tanggal` sebagai referensi waktu
+            ->dateColumn('tanggal')
             ->sum('overtime');
 
-        // Jika tidak ada data, return dataset kosong
-        if ($dataOvertime->isEmpty()) {
-            return [
-                'datasets' => [],
-                'labels' => [],
-            ];
+        // Ambil Plan dari `proyek_plans`
+        $planValues = [];
+        $labels = [];
+
+        foreach ($dataOvertime as $value) {
+            $bulan = Carbon::parse($value->date)->month;
+            $tahun = Carbon::parse($value->date)->year;
+
+            // Ambil jumlah_plan dari tabel proyek_plans
+            $plan = ProyekPlan::where('proyek_id', $proyekId)
+                ->where('bulan', $bulan)
+                ->where('tahun', $tahun)
+                ->value('jumlah_plan') ?? 0;
+
+            $planValues[] = $plan;
+            $labels[] = Carbon::parse($value->date)->format('F Y');
         }
 
         return [
@@ -53,10 +65,21 @@ class ManhourChart extends ChartWidget
                     'label' => 'Jumlah Manhours',
                     'data' => $dataOvertime->map(fn (TrendValue $value) => $value->aggregate),
                     'borderColor' => '#4CAF50',
-                    'backgroundColor' => '#4CAF50',
+                    'backgroundColor' => 'rgba(76, 175, 80, 0.5)', // Warna hijau dengan 50% transparansi
+                    'type' => 'bar',
+                ],
+                [
+                    'label' => 'Plan Manhours',
+                    'data' => $planValues,
+                    'borderColor' => '#FF9800',
+                    'backgroundColor' => 'transparent',
+                    'borderWidth' => 2,
+                    'pointRadius' => 5,
+                    'borderDash' => [5, 5], 
+                    'type' => 'line',
                 ],
             ],
-            'labels' => $dataOvertime->map(fn (TrendValue $value) => Carbon::parse($value->date)->format('F')),
+            'labels' => $labels,
         ];
     }
 
