@@ -111,8 +111,8 @@ class ProyekResource extends Resource
                 // Tambahkan filter jika perlu
             ])
             ->actions([
-                Action::make('Lihat Plan Manpower')
-                    ->label('Lihat Plan Manpower')
+                Action::make('Lihat Plan Manhours')
+                    ->label('Lihat Plan Manhours')
                     ->icon('heroicon-o-eye')
                     ->url(fn ($record) => route('filament.admin.resources.proyek-plans.index', [
                         'record' => $record->id,

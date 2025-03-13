@@ -23,7 +23,7 @@ class ProyekPlanResource extends Resource
     protected static ?string $model = ProyekPlan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
-    protected static ?string $navigationLabel = 'Manhour Plan';
+    protected static ?string $navigationLabel = 'Manhours Plan';
 
     protected static ?string $navigationGroup = 'Kelola Proyek';
     protected static ?int $navigationSort = 2;
@@ -65,7 +65,7 @@ class ProyekPlanResource extends Resource
                         TextInput::make('jumlah_plan')
                             ->numeric()
                             ->required()
-                            ->label('Jumlah Manpower'),
+                            ->label('Jumlah Plan Manhours'),
                     ]),
             ]);
     }
@@ -108,7 +108,7 @@ class ProyekPlanResource extends Resource
                 ->extraAttributes(['class' => 'border border-green-500 px-3 py-1 rounded-md']),
 
             TextColumn::make('jumlah_plan')
-                ->label('Plan Manpower')
+                ->label('Plan Manhours')
                 ->badge()
                 ->color('danger')
                 ->extraAttributes(['class' => 'border border-red-500 px-3 py-1 rounded-md']),
