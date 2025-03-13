@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Manpower_idl extends Model
 {
@@ -27,7 +28,7 @@ class Manpower_idl extends Model
     {
         return $this->belongsTo(Proyek::class);
     }
-    public function divisi_id()
+    public function divisi(): BelongsTo
     {
         return $this->belongsTo(Divisi::class, 'divisi_id');
     }

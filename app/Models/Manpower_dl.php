@@ -37,7 +37,7 @@ class Manpower_dl extends Model
         return $this->belongsTo(Manpower_idl::class, 'manpower_idl_id');
     }
 
-    public function divisi_id()
+    public function divisi()
     {
         return $this->belongsTo(Divisi::class, 'divisi_id');
     }
