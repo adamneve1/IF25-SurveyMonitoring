@@ -10,6 +10,8 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Filament\Tables\Actions\Action;
+
 
 class ProyekResource extends Resource
 {
@@ -17,13 +19,16 @@ class ProyekResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
     protected static ?string $navigationLabel = 'Proyek';
-    protected static ?string $navigationGroup = 'Kelola';
+    protected static ?string $navigationGroup = 'Kelola Proyek';
+    protected static ?int $navigationSort = 1; 
+    
 
     // Batasi akses Create
     public static function canCreate(): bool
     {
         return self::emailDomainCheck() && !self::isExcludedUser();
     }
+    
 
     // Batasi akses Edit
     public static function canEdit($record): bool
@@ -77,9 +82,10 @@ class ProyekResource extends Resource
                 Forms\Components\DatePicker::make('estimasi_selesai')
                     ->required()
                     ->placeholder('Estimasi Selesai Proyek'),
-                Forms\Components\TextInput::make('jumlah_manpower')
-                    ->required()
-                    ->placeholder('Jumlah Manpower Pada Proyek'),
+                    Forms\Components\Hidden::make('jumlah_manpower')
+                    ->default(0),
+                
+                
             ]);
     }
 
@@ -105,15 +111,27 @@ class ProyekResource extends Resource
                 // Tambahkan filter jika perlu
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->visible(fn ($record) => self::isExcludedUser()),
-                Tables\Actions\DeleteAction::make()
-                    ->visible(fn ($record) => self::emailDomainCheck() && !self::isExcludedUser()),
+                Action::make('Lihat Plan Manpower')
+                    ->label('Lihat Plan Manpower')
+                    ->icon('heroicon-o-eye')
+                    ->url(fn ($record) => route('filament.admin.resources.proyek-plans.index', [
+                        'record' => $record->id,
+                        'tableFilters' => [
+                            'proyek_id' => ['value' => $record->id]
+                        ]
+                    ]))
+                    ->openUrlInNewTab(),
+            
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make()
+                        ->visible(fn ($record) => self::emailDomainCheck() && !self::isExcludedUser()),
+            
+                    Tables\Actions\DeleteAction::make()
+                        ->visible(fn ($record) => self::emailDomainCheck() && !self::isExcludedUser()),
+                ])->icon('heroicon-o-ellipsis-vertical'), // Dropdown untuk Edit & Delete
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make()
-                    ->visible(fn () => self::emailDomainCheck() && !self::isExcludedUser()),
-            ]);
+                
+        ;
     }
 
     public static function getRelations(): array

@@ -32,4 +32,9 @@ class Proyek extends Model
     {
         return $this->hasMany(Manpower_idl::class, 'proyek_id');
     }
+    
+    
+protected $attributes = [
+    'jumlah_manpower' => null, // Supaya default-nya NULL
+];
 }

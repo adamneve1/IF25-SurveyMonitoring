@@ -103,8 +103,12 @@ class ManpowerIdlAbsensiResource extends Resource
                 
             ])
             ->actions([])
+            ->defaultSort('tanggal', 'desc')
             ->bulkActions([]);
+            
+            
     }
+    
 
     public static function getRelations(): array
     {
