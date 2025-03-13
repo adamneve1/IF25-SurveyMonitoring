@@ -69,7 +69,7 @@ class ManhourChart extends ChartWidget
                     'type' => 'bar',
                 ],
                 [
-                    'label' => 'Plan Manpower',
+                    'label' => 'Plan Manhours',
                     'data' => $planValues,
                     'borderColor' => '#FF9800',
                     'backgroundColor' => 'transparent',
