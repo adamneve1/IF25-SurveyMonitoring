@@ -101,9 +101,9 @@ class ManpowerResource extends Resource
                 TextColumn::make('hadir')
                      ->label('Absensi') // Mengubah label menjadi 'Absensi'
                     ->sortable()
-                      ->formatStateUsing(fn (string $state): string => $state === '1' ? 'Hadir' : 'Tidak Hadir'),
-                TextColumn::make('manpower_idl.devisi')
-                    ->label('Devisi')
+                    ->formatStateUsing(fn (string $state): string => $state === '1' ? 'Hadir' : 'Tidak Hadir'),
+                TextColumn::make('manpower_idl.divisi.name')
+                    ->label('Divisi')
                     ->sortable(),
                     TextColumn::make('remark')
                     ->label('Remarks')
@@ -133,7 +133,7 @@ class ManpowerResource extends Resource
                         'civil' => 'Civil',
                     ])
                     ->indicator('Devisi'),
-             
+            
             // Filter berdasarkan Tanggal
             Filter::make('tanggal')
             ->label('Filter By Tanggal')

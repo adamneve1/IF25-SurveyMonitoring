@@ -7,6 +7,8 @@ use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use App\Models\Manhour;
 use Filament\Resources\Components\Tab;
+use App\Models\Divisi;
+use Illuminate\Database\Eloquent\Builder;
 
 class ListManpowers extends ListRecords
 {
@@ -21,43 +23,20 @@ class ListManpowers extends ListRecords
 
     public function getTabs(): array
     {
-        return [
+        $tabs = [
             'semua' => Tab::make('Semua')
-                ->modifyQueryUsing(function ($query) {
-                    return $query;
-                }),
-            'pgmt' => Tab::make('PGMT')
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('devisi', 'pgmt');
-                }),
-            'hvac' => Tab::make('HVAC')
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('devisi', 'hvac');
-                }),
-            'pa.qc' => Tab::make('QA.QC')
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('devisi', 'qa.qc');
-                }),
-            'piping' => Tab::make('Piping')
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('devisi', 'piping');
-                }),
-            'scaffolder' => Tab::make('Scaffolder')
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('devisi', 'scaffolder');
-                }),
-            'structure' => Tab::make('Structure')
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('devisi', 'structure');
-                }),
-            'architectural' => Tab::make('Architectural')
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('devisi', 'architectural');
-                }),
-            'civil' => Tab::make('Civil')
-                ->modifyQueryUsing(function ($query) {
-                    return $query->where('devisi', 'civil');
-                }),
+                ->modifyQueryUsing(fn (Builder $query) => $query),
         ];
+    
+        $divisiList = Divisi::pluck('name');
+        foreach ($divisiList as $divisi)
+        {
+            $tabs[$divisi] = Tab::make(strtoupper($divisi))
+                ->modifyQueryUsing(fn (Builder $query) => 
+                    $query->whereHas('manpower_idl.divisi', fn ($q) => $q->where('name', $divisi))
+                );
+        }
+
+        return $tabs;
     }
 }
