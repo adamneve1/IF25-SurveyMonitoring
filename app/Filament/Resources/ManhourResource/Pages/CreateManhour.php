@@ -30,14 +30,14 @@ class CreateManhour extends CreateRecord
         return $form
             ->schema([
                 Select::make('proyek_id')
-                ->label('Proyek')
-                ->options(Proyek::query()
-                    ->whereNotNull('nama_proyek')
-                    ->pluck('nama_proyek', 'id'))
-                ->native(false)
-                ->reactive()
-                ->live()
-                ->required(),
+                    ->label('Proyek')
+                    ->options(Proyek::query()
+                        ->whereNotNull('nama_proyek')
+                        ->pluck('nama_proyek', 'id'))
+                    ->native(false)
+                    ->reactive()
+                    ->live()
+                    ->required(),
             
 
                 Select::make('jam_absen')
@@ -60,17 +60,10 @@ class CreateManhour extends CreateRecord
                         ->where('proyek_id', $get('proyek_id'))
                         ->whereNotNull('nama')
                         ->pluck('nama', 'id')),
-                
-
-             
-                 
-           TextInput::make('remarks')
+                TextInput::make('remarks')
                     ->required()
                     ->label('Remarks'),
-    
-
-
-                    Repeater::make('manhourn')
+                Repeater::make('manhourn')
                     ->label('Manpower DL')
                     ->live()
                     ->schema([
@@ -78,10 +71,10 @@ class CreateManhour extends CreateRecord
                             ->label('Manpower DL')
                             ->searchable()
                             ->reactive()
-                             ->live()
-                              ->options(function (Get $get) {
+                            ->live()
+                            ->options(function (Get $get) {
                                 $proyekId = $get('../../proyek_id');
-                                 $manpowerIdlId = $get('../../manpower_idl_id');
+                                $manpowerIdlId = $get('../../manpower_idl_id');
                                 $selectedIds = collect($get('manhourn') ?? [])
                                         ->pluck('manpower_dl_id')
                                         ->filter()
@@ -89,13 +82,13 @@ class CreateManhour extends CreateRecord
     
                                 return Manpower_dl::query()
                                     ->where('proyek_id', $proyekId)
-                                     ->whereNotNull('nama')
-                                      ->when($manpowerIdlId, function ($query, $manpowerIdlId) {
+                                    ->whereNotNull('nama')
+                                    ->when($manpowerIdlId, function ($query, $manpowerIdlId) {
                                             return $query->whereHas('manpower_idl', function ($query) use ($manpowerIdlId) {
                                                 $query->where('manpower_idl_id', $manpowerIdlId);
                                             });
                                         })
-                                     ->whereNotIn('id', $selectedIds)
+                                    ->whereNotIn('id', $selectedIds)
                                     ->pluck('nama', 'id');
                             })
                             ->required()
@@ -103,7 +96,7 @@ class CreateManhour extends CreateRecord
                         TimePicker::make('check_in')
                             ->label('Check In')
                             ->required()
-                             ->format('H:i'),
+                            ->format('H:i'),
                         TimePicker::make('check_out')
                             ->label('Check Out')
                             ->required()
@@ -117,15 +110,15 @@ class CreateManhour extends CreateRecord
             ]);
     }
     
-     public function save()
+    public function save()
     {
         $get = $this->form->getState();
-         $insert = [];
+        $insert = [];
         foreach($get['manhourn'] as $row) {
-             $checkIn = Carbon::parse($row['check_in']);
-             $checkOut = Carbon::parse($row['check_out']);
-             $overtime = $checkOut->diffInHours($checkIn);
-             $insert[] = [
+            $checkIn = Carbon::parse($row['check_in']);
+            $checkOut = Carbon::parse($row['check_out']);
+            $overtime = $checkOut->diffInHours($checkIn);
+            $insert[] = [
                 'proyek_id' => $get['proyek_id'],
                 'manpower_idl_id' => $get['manpower_idl_id'],
                 'manpower_dl_id' => $row['manpower_dl_id'],
@@ -133,12 +126,12 @@ class CreateManhour extends CreateRecord
                 'jam_absen' => $get['jam_absen'],
                 'overtime' => $overtime,
                 'pic' => auth()->user()->name ?? '',
-                 'remark' => $get['remarks'],
+                'remark' => $get['remarks'],
                 
-             ];
+            ];
         }
     
-       Manhour::insert($insert);
+        Manhour::insert($insert);
     
         return redirect()->to('/admin/manhours');
     }

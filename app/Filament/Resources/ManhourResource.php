@@ -161,8 +161,8 @@ class ManhourResource extends Resource
                     ->sortable(),
                 
                 
-                Tables\Columns\TextColumn::make('manpower_idl.devisi')
-                    ->label('Devisi')
+                Tables\Columns\TextColumn::make('manpower_idl.divisi.name')
+                    ->label('Divisi')
                     ->sortable(),
                     TextColumn::make('remark')->label('Remarks')
                     ,
