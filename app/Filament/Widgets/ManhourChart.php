@@ -37,7 +37,7 @@ class ManhourChart extends ChartWidget
                 start: $start ? Carbon::parse($start) : now()->subMonths(6),
                 end: $end ? Carbon::parse($end) : now(),
             )
-            ->perMonth()
+            ->perDay()
             ->dateColumn('tanggal')
             ->sum('overtime');
 
@@ -56,7 +56,7 @@ class ManhourChart extends ChartWidget
                 ->value('jumlah_plan') ?? 0;
 
             $planValues[] = $plan;
-            $labels[] = Carbon::parse($value->date)->format('F Y');
+            $labels[] = Carbon::parse($value->date)->format('d M Y');
         }
 
         return [
