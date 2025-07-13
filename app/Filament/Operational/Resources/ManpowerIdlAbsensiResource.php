@@ -1,6 +1,7 @@
 <?php
 
 
+namespace App\Filament\Operational\Resources;
 
 use App\Filament\Operational\Resources\ManpowerIdlAbsensiResource\Pages;
 use App\Models\ManpowerIdlAbsensi;

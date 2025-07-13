@@ -115,9 +115,9 @@ class ManpowerDlResource extends Resource
                 // Tables\Columns\TextColumn::make('devisi')
                 //     ->label('Devisi')
                 //     ->sortable(),
-                Tables\Columns\TextColumn::make('divisi.name')
-                    ->label('Divisi')
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('manpower_idl.nama')
+    ->label('Manpower IDL')
+    ->sortable(),
                     ])
                 ->filters([
                     SelectFilter::make('proyek_id')

@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+use Filament\Forms\Components\TextInput;
 class DivisiResource extends Resource
 {
     protected static ?string $model = Divisi::class;
@@ -22,15 +23,18 @@ class DivisiResource extends Resource
     protected static ?string $navigationGroup = 'Kelola';
 
     public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->placeholder('e.g Welding')
-                    ->label('Divisi'),
-            ]);
-    }
+{
+    return $form
+        ->schema([
+            TextInput::make('name')
+                ->required()
+                ->placeholder('e.g WELDING')
+                ->label('Divisi')
+                ->afterStateUpdated(fn ($state, callable $set) => $set('name', strtoupper($state)))
+                ->dehydrateStateUsing(fn ($state) => strtoupper($state))
+                ->live(),
+        ]);
+}
 
     public static function table(Table $table): Table
     {

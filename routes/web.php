@@ -16,10 +16,13 @@ use Illuminate\Support\Facades\Route;
 
 
 // Redirect halaman awal ke URL tertentu
-Route::get('/', function () {
-    return redirect('/operational');
-});
+//Route::get('/', function () {
+  //  return redirect('/operational');
+//});
 Route::get('/home', function () {
     return view('home');
+});
+Route::get('/', function () {
+    return view('landing');
 });
 

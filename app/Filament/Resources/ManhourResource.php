@@ -140,6 +140,7 @@ class ManhourResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+        ->defaultSort('tanggal', 'desc')
             ->columns([
                 
                 Tables\Columns\TextColumn::make('proyek.nama_proyek')
@@ -159,6 +160,7 @@ class ManhourResource extends Resource
                 Tables\Columns\TextColumn::make('pic')
                     ->label('PIC')
                     ->sortable(),
+                    
                 
                 
                 Tables\Columns\TextColumn::make('manpower_idl.divisi.name')
