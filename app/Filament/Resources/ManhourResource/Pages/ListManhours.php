@@ -20,34 +20,21 @@ class ListManhours extends ListRecords
         ];
     }
 
-    /**
-     * Membuat tab dinamis yang lebih aman dan informatif.
-     */
-    public function getTabs(): array
+ 
+          public function getTabs(): array
     {
-        $tabs = ['all' => Tab::make('Semua')];
-
-        // 1. Ambil semua data Divisi
-        $semuaDivisi = Divisi::all();
-
-        foreach ($semuaDivisi as $divisi) {
-            // 2. Hitung jumlah manhour untuk divisi ini
-            $count = $this->getResource()::getEloquentQuery()
-                ->whereHas('manpower_idl.divisi', function ($query) use ($divisi) {
-                    $query->where('id', $divisi->id); // Lebih aman menggunakan ID
-                })
-                ->count();
-            
-            // 3. Hanya tampilkan tab jika ada isinya (jumlah > 0)
-            if ($count > 0) {
-                $tabs[$divisi->name] = Tab::make(strtoupper($divisi->name))
-                    ->modifyQueryUsing(function (Builder $query) use ($divisi) {
-                        return $query->whereHas('manpower_idl.divisi', function ($q) use ($divisi) {
-                            $q->where('id', $divisi->id);
-                        });
-                    })
-                    ->badge($count); // Gunakan jumlah yang sudah kita hitung
-            }
+        $tabs = [
+            'semua' => Tab::make('Semua')
+                ->modifyQueryUsing(fn (Builder $query) => $query),
+        ];
+    
+        $divisiList = Divisi::pluck('name');
+        foreach ($divisiList as $divisi)
+        {
+            $tabs[$divisi] = Tab::make(strtoupper($divisi))
+                ->modifyQueryUsing(fn (Builder $query) => 
+                    $query->whereHas('manpower_idl.divisi', fn ($q) => $q->where('name', $divisi))
+                );
         }
 
         return $tabs;

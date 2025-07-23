@@ -4,8 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Database\Factories\ManpowerDlFactory;
 
 class Manpower_dl extends Model
 {
@@ -18,20 +17,25 @@ class Manpower_dl extends Model
     protected $fillable = [
         'proyek_id',
         'nama',
-        'devisi',
         'manpower_idl_id',
-        'divisi_id'
+        'divisi_id',
     ];
 
-     public function proyek(): BelongsTo
+    protected static function newFactory()
+    {
+        return ManpowerDlFactory::new();
+    }
+
+    public function proyek()
     {
         return $this->belongsTo(Proyek::class);
     }
-    public function manhours(): BelongsToMany
+
+    public function manhours()
     {
         return $this->belongsToMany(Manhour::class);
-
     }
+
     public function manpower_idl()
     {
         return $this->belongsTo(Manpower_idl::class, 'manpower_idl_id');
@@ -41,6 +45,4 @@ class Manpower_dl extends Model
     {
         return $this->belongsTo(Divisi::class, 'divisi_id');
     }
-
-
 }

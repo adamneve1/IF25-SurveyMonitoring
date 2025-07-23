@@ -161,9 +161,12 @@ class ManhourChart extends ChartWidget
         return ['datasets' => [['label' => 'Realisasi Manhours', 'data' => $actualValues->all(), 'backgroundColor' => '#36A2EB', 'type' => 'bar'], ['label' => 'Plan Manhours', 'data' => $planValues->all(), 'backgroundColor' => '#FF6384', 'type' => 'bar']], 'labels' => $labels->all()];
     }
 
-    protected function getType(): string
-    {
-        // Saat mode yearly, lebih baik menggunakan 'bar'
-        return $this->filters['view_mode'] === 'monthly' || $this->filters['view_mode'] === 'yearly' ? 'bar' : 'line';
+   protected function getType(): string
+{
+    // Default ke 'line' jika tidak ada filter atau view_mode
+    if (!isset($this->filters['view_mode'])) {
+        return 'line';
     }
-}
+    
+    return in_array($this->filters['view_mode'], ['monthly', 'yearly']) ? 'bar' : 'line';
+}}

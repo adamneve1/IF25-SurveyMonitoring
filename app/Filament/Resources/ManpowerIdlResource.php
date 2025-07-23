@@ -105,10 +105,13 @@ class ManpowerIdlResource extends Resource
                 Tables\Columns\TextColumn::make('nama')
                     ->label('Manpower IDL')
                     ->sortable()
+                     ->searchable()
                     ->disabled(fn () => self::isExcludedUser()),
                 Tables\Columns\TextColumn::make('proyek.nama_proyek')
                     ->label('Proyek')
-                    ->sortable(),
+                    ->sortable()
+                     ->searchable(),
+                    
                 Tables\Columns\TextColumn::make('divisi.name')
                     ->label('Divisi')
                     ->sortable(),

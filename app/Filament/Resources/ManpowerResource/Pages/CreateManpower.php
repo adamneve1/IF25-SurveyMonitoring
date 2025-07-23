@@ -18,12 +18,16 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Card;
+use Filament\Notifications\Notification;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Services\ManpowerAttendanceService;
 use App\Models\ManpowerIdlAbsensi;
+
+
 class CreateManpower extends CreateRecord
 {
     protected static string $resource = ManpowerResource::class;
@@ -137,39 +141,39 @@ class CreateManpower extends CreateRecord
             ]);
                     
     }
-    public function save()
-    {
-        $get = $this->form->getState();
-        $insert = [];
-    
-        // Cek apakah ada data manpower DL yang diinput
-        if (!empty($get['manpowern'])) {
-            foreach ($get['manpowern'] as $row) {
-                $insert[] = [
-                    'proyek_id' => $get['proyek_id'],
-                    'manpower_idl_id' => $get['manpower_idl_id'],
-                    'manpower_dl_id' => $row['manpower_dl_id'],
-                    'tanggal' => Carbon::now()->toDateString(),
-                    'pic' => auth()->user()->name ?? '',
-                    'remark' => $get['remarks'],
-                    'hadir' => $row['is_present'] === true ? 1 : 0,
-                ];
-            }
-    
-            // Simpan ke tabel Manpower DL jika ada data DL yang dikirim
-            Manpower::insert($insert);
+ public function save(ManpowerAttendanceService $attendanceService)
+{
+    $get = $this->form->getState();
+
+    try {
+        $result = $attendanceService->saveAttendance($get);
+        
+        if (!empty($result['skipped'])) {
+            $skippedList = implode(', ', $result['skipped']);
+
+            Notification::make()
+                ->title('Sebagian absensi disimpan')
+                ->warning()
+                ->body("Beberapa DL sudah absen hari ini dan dilewati: {$skippedList}")
+                ->send();
+        } else {
+            Notification::make()
+                ->title('Absensi berhasil')
+                ->success()
+                ->body('Semua absensi DL berhasil disimpan.')
+                ->send();
         }
-    
-        // Simpan Data Absensi untuk Manpower IDL
-        ManpowerIdlAbsensi::create([
-            'proyek_id' => $get['proyek_id'],
-            'manpower_idl_id' => $get['manpower_idl_id'],
-            'tanggal' => Carbon::now()->toDateString(),
-            'hadir' => 1, // Manpower IDL otomatis hadir
-            'remark' => $get['remarks'],
-        ]);
-    
-        return redirect()->to('/admin/manpowers');
+
+        // Tetap di halaman, tidak redirect
+        // Bisa juga reset form kalau mau
+        $this->form->fill(); // reset form ke default (opsional)
+
+    } catch (\Exception $e) {
+        Notification::make()
+            ->title('Gagal menyimpan absensi')
+            ->danger()
+            ->body($e->getMessage())
+            ->send();
     }
-    
-}    
+}
+}

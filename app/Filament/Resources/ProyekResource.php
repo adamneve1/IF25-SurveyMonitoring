@@ -105,6 +105,7 @@ class ProyekResource extends Resource
                     ])
                     ->selectablePlaceholder(false)
                     ->sortable()
+                     ->searchable()
                     ->disabled(fn () => self::isExcludedUser()),
             ])
             ->filters([

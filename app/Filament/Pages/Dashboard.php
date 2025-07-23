@@ -90,4 +90,12 @@ class Dashboard extends \Filament\Pages\Dashboard
             ManpowerChart::class,
         ];
     }
+    public function getTitle(): string
+{
+    return 'Dashboard'; // Ganti dengan teks apapun yang kamu mau
+}
+public static function getNavigationLabel(): string
+{
+    return 'Dashboard';
+}
 }

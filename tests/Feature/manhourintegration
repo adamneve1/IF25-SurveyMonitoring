@@ -1,0 +1,70 @@
+<?php
+
+namespace Tests\Feature;
+
+use Tests\TestCase;
+use App\Models\User;
+use App\Models\Proyek;
+use App\Models\ManpowerIdl;
+use App\Models\ManpowerDl;
+use App\Models\Manhour;
+use Livewire\Livewire;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+class ManhourIntegrationTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_bisa_melihat_halaman_form_create_manhour()
+    {
+        // Arrange
+        $user = User::factory()->create(['is_admin' => 1]);
+        $this->actingAs($user);
+
+        // Act
+        $response = $this->get('/admin/manhours/create');
+
+        // Assert
+        $response->assertStatus(200);
+        $response->assertSee('Jam Absen'); // Atau teks lain dari form create
+    }
+
+    public function test_bisa_membuat_data_manhour_dengan_form_custom()
+    {
+        // Arrange
+        $user = User::factory()->create(['is_admin' => 1]);
+        $this->actingAs($user);
+
+        $proyek = Proyek::factory()->create();
+        $manpowerIdl = ManpowerIdl::factory()->create();
+        $manpowerDl = ManpowerDl::factory()->create();
+
+        $formState = [
+            'proyek_id' => $proyek->id,
+            'manpower_idl_id' => $manpowerIdl->id,
+            'jam_absen' => '08:00',
+            'remarks' => 'Lembur karena revisi site',
+        ];
+
+        $manhourRow = [
+            'manpower_dl_id' => $manpowerDl->id,
+            'check_in' => '2025-07-19 08:00:00',
+            'check_out' => '2025-07-19 17:00:00',
+        ];
+
+        // Act
+        Livewire::test(\App\Filament\Resources\ManhourResource\Pages\CreateManhour::class)
+            ->set('form', $formState)
+            ->call('save', [$manhourRow]); // jika `save` menerima parameter
+
+        // Assert
+        $this->assertDatabaseHas('manhours', [
+            'proyek_id' => $formState['proyek_id'],
+            'manpower_idl_id' => $formState['manpower_idl_id'],
+            'manpower_dl_id' => $manhourRow['manpower_dl_id'],
+            'jam_absen' => $formState['jam_absen'],
+            'overtime' => 9, // 17 - 8 = 9 jam lembur
+            'remark' => $formState['remarks'],
+        ]);
+    }
+}

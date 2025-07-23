@@ -63,48 +63,63 @@ class CreateManhour extends CreateRecord
                 TextInput::make('remarks')
                     ->required()
                     ->label('Remarks'),
-                Repeater::make('manhourn')
-                    ->label('Manpower DL')
-                    ->live()
-                    ->schema([
-                        Select::make('manpower_dl_id')
-                            ->label('Manpower DL')
-                            ->searchable()
-                            ->reactive()
-                            ->live()
-                            ->options(function (Get $get) {
-                                $proyekId = $get('../../proyek_id');
-                                $manpowerIdlId = $get('../../manpower_idl_id');
-                                $selectedIds = collect($get('manhourn') ?? [])
-                                        ->pluck('manpower_dl_id')
-                                        ->filter()
-                                        ->toArray();
-    
-                                return Manpower_dl::query()
-                                    ->where('proyek_id', $proyekId)
-                                    ->whereNotNull('nama')
-                                    ->when($manpowerIdlId, function ($query, $manpowerIdlId) {
-                                            return $query->whereHas('manpower_idl', function ($query) use ($manpowerIdlId) {
-                                                $query->where('manpower_idl_id', $manpowerIdlId);
-                                            });
-                                        })
-                                    ->whereNotIn('id', $selectedIds)
-                                    ->pluck('nama', 'id');
-                            })
-                            ->required()
-                            ->placeholder('Pilih Manpower DL'),
-                        TimePicker::make('check_in')
-                            ->label('Check In')
-                            ->required()
-                            ->format('H:i'),
-                        TimePicker::make('check_out')
-                            ->label('Check Out')
-                            ->required()
-                            ->format('H:i'),
-                    ])
-                    ->minItems(1)
-                    ->columnSpanFull()
-                    ->addActionLabel('Tambah Manpower DL'),
+               Repeater::make('manhourn')
+    ->label('Manpower DL')
+    ->live()
+    ->schema([
+        Select::make('manpower_dl_id')
+            ->label('Manpower DL')
+            ->searchable()
+            ->reactive()
+            ->live()
+            ->options(function (Get $get) {
+                $proyekId = $get('../../proyek_id');
+                $manpowerIdlId = $get('../../manpower_idl_id');
+                $selectedIds = collect($get('manhourn') ?? [])
+                    ->pluck('manpower_dl_id')
+                    ->filter()
+                    ->toArray();
+
+                return Manpower_dl::query()
+                    ->where('proyek_id', $proyekId)
+                    ->when($manpowerIdlId, function ($query, $manpowerIdlId) {
+                        $query->whereHas('manpower_idl', function ($q) use ($manpowerIdlId) {
+                            $q->where('manpower_idl_id', $manpowerIdlId);
+                        });
+                    })
+                    ->whereNotNull('nama')
+                    ->whereNotIn('id', $selectedIds)
+                    ->pluck('nama', 'id');
+            })
+            ->required()
+            ->placeholder('Pilih Manpower DL'),
+
+        TimePicker::make('check_in')
+            ->label('Check In')
+            ->required()
+            ->withoutSeconds()
+            ->format('H:i'),
+
+        TimePicker::make('check_out')
+            ->label('Check Out')
+            ->required()
+            ->withoutSeconds()
+            ->format('H:i')
+            ->rules([
+                function (Get $get) {
+                    return function (string $attribute, $value, $fail) use ($get) {
+                        $checkIn = $get('check_in');
+                        if ($checkIn && $value <= $checkIn) {
+                            $fail('Check out harus lebih besar dari check in.');
+                        }
+                    };
+                },
+            ]),
+    ])
+    ->minItems(1)
+    ->columnSpanFull()
+    ->addActionLabel('Tambah Manpower DL'),
+
     
     
             ]);

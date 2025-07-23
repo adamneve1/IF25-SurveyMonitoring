@@ -17,10 +17,10 @@ use Illuminate\Database\Eloquent\Builder;
 class ManpowerIdlAbsensiResource extends Resource
 {
     protected static ?string $model = ManpowerIdlAbsensi::class;
-    protected static ?string $navigationLabel = 'Absensi IDL';
-    protected static ?string $label = 'Absensi Supervisor'; // Label lebih jelas
+    protected static ?string $navigationLabel = 'Absensi IDL'; //sidebar
+    protected static ?string $label = 'Absensi Supervisor'; 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
-    protected static ?string $navigationGroup = 'Operasional'; // Kelompokkan di menu yang sesuai
+     
 
     public static function form(Form $form): Form
     {

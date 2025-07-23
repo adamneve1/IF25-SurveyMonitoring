@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Database\Factories\ManpowerIdlAbsensiFactory;
 
 class ManpowerIdlAbsensi extends Model
 {
@@ -28,4 +29,8 @@ class ManpowerIdlAbsensi extends Model
     {
         return $this->belongsTo(Manpower_idl::class, 'manpower_idl_id');
     }
+    protected static function newFactory()
+{
+    return ManpowerIdlAbsensiFactory::new();
+}
 }

@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+
+
+use Database\Factories\ManhourFactory;
+
+
 class Manhour extends Model
 {
     use HasFactory;
@@ -42,4 +47,8 @@ class Manhour extends Model
     {
          return $this->belongsToMany(Manpower_dl::class, 'manpower_dl_manhour', 'manhour_id', 'manpower_dl_id')->withPivot(['overtime']);
     }
+    protected static function newFactory()
+{
+    return ManhourFactory::new();
+}
 }

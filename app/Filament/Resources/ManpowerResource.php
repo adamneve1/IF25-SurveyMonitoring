@@ -23,8 +23,9 @@ class ManpowerResource extends Resource
     protected static ?string $model = Manpower::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationLabel = 'Manpower';
+    protected static ?string $navigationLabel = 'Manpower (Absensi DL)';
     protected static ?string $label = 'Manpower';
+
 
 
     public static function canCreate(): bool
@@ -98,10 +99,16 @@ class ManpowerResource extends Resource
                     ->label('Manpower IDL')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('hadir')
-                     ->label('Absensi') // Mengubah label menjadi 'Absensi'
-                    ->sortable()
-                    ->formatStateUsing(fn (string $state): string => $state === '1' ? 'Hadir' : 'Tidak Hadir'),
+         Tables\Columns\IconColumn::make('hadir')
+    ->label('Absensi')
+    ->boolean()
+    ->getStateUsing(fn ($record) => $record->hadir == '1') // bantu konversi string '1' ke boolean
+    ->trueIcon('heroicon-o-check-circle')
+    ->falseIcon('heroicon-o-x-circle')
+    ->trueColor('success')
+    ->falseColor('danger'),
+
+
                 TextColumn::make('manpower_idl.divisi.name')
                     ->label('Divisi')
                     ->sortable(),
@@ -120,19 +127,19 @@ class ManpowerResource extends Resource
                     ->relationship('proyek', 'nama_proyek')
                     ->preload()
                     ->indicator('Proyek'),
-                SelectFilter::make('devisi')
-                    ->label('Filter By Devisi')
-                    ->options([
-                        'pgmt' => 'PGMT',
-                        'hvac' => 'HVAC',
-                        'qa.qc' => 'QA/QC',
-                        'piping' => 'Piping',
-                        'scaffolder' => 'Scaffolder',
-                        'structure' => 'Structure',
-                        'architectural' => 'Architectural',
-                        'civil' => 'Civil',
-                    ])
-                    ->indicator('Devisi'),
+                // SelectFilter::make('devisi')
+                //     ->label('Filter By Devisi')
+                //     ->options([
+                //         'pgmt' => 'PGMT',
+                //         'hvac' => 'HVAC',
+                //         'qa.qc' => 'QA/QC',
+                //         'piping' => 'Piping',
+                //         'scaffolder' => 'Scaffolder',
+                //         'structure' => 'Structure',
+                //         'architectural' => 'Architectural',
+                //         'civil' => 'Civil',
+                //     ])
+                //     ->indicator('Devisi'),
             
             // Filter berdasarkan Tanggal
             Filter::make('tanggal')

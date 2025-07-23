@@ -146,12 +146,14 @@ class ManhourResource extends Resource
                 Tables\Columns\TextColumn::make('proyek.nama_proyek')
                     ->label('Proyek')
                     ->sortable(),
+                    
                 Tables\Columns\TextColumn::make('manpower_idl.nama')
                     ->label('Manpower IDL')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('manpower_dl.nama')
                     ->label('Manpower DL')
                     ->sortable(),
+                    
                 Tables\Columns\TextColumn::make('tanggal')
                     ->date()
                     ->sortable(),
@@ -202,11 +204,11 @@ class ManhourResource extends Resource
                             ->visible(fn ($record) => self::emailDomainCheck() && !self::isExcludedUser()),
                     ])
                     ->headerActions([
-                        ExportAction::make()->exporter(ManhourExporter::class)
-                            ->label('Export Data'),
-                        ImportAction::make()
-                            ->importer(ManhourImporter::class)
-                            ->label('Import Data'),
+                        // ExportAction::make()->exporter(ManhourExporter::class)
+                        //     ->label('Export Data'),
+                        // ImportAction::make()
+                        //     ->importer(ManhourImporter::class)
+                        //     ->label('Import Data'),
                     ])
                     ->bulkActions([
                         Tables\Actions\BulkActionGroup::make([
@@ -227,6 +229,7 @@ class ManhourResource extends Resource
     {
         return [];
     }
+    
 
     public static function getPages(): array
     {

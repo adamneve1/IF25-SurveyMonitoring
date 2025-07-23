@@ -15,6 +15,8 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Validation\ValidationException;
 use App\Models\Proyek;
 use App\Models\Manpower_idl;
+use App\Services\ManpowerDlService;
+
 
 
 class CreateManpowerDl extends CreateRecord
@@ -98,20 +100,14 @@ class CreateManpowerDl extends CreateRecord
             ]);
     }
 
-    public function save()
-    {
-        $get = $this->form->getState();
-        $insert = [];
-        foreach ($get['nama_manpower_dls'] as $row) {
-            $insert[] = [
-                'proyek_id' => $get['proyek_id'],
-                // 'devisi' => $get['devisi'],
-                'divisi_id' => $get['divisi_id'],
-                'manpower_idl_id' => $get['manpower_idl_id'],
-                'nama' => $row['nama'],
-            ];
-        }
-        Manpower_dl::insert($insert);
-        return redirect()->to('/admin/manpower-dls');
-    }
-}
+ public function save()
+{
+    $formState = $this->form->getState();
+
+    // Ambil service langsung dari service container Laravel
+    $manpowerDlService = app(ManpowerDlService::class);
+
+    $manpowerDlService->createBulk($formState);
+
+    return redirect()->to('/admin/manpower-dls');
+}}

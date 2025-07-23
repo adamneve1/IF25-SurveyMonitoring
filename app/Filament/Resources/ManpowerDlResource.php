@@ -106,6 +106,7 @@ class ManpowerDlResource extends Resource
                 Tables\Columns\TextColumn::make('nama')
                     ->label('Manpower DL')
                     ->sortable()
+                    ->searchable()
                     ->disabled(fn () => self::isExcludedUser()),
                     
                     
@@ -117,6 +118,7 @@ class ManpowerDlResource extends Resource
                 //     ->sortable(),
                 Tables\Columns\TextColumn::make('manpower_idl.nama')
     ->label('Manpower IDL')
+     ->searchable()
     ->sortable(),
                     ])
                 ->filters([
@@ -124,20 +126,10 @@ class ManpowerDlResource extends Resource
                         ->label('Filter By Proyek')
                         ->relationship('proyek', 'nama_proyek')
                         ->preload()
+                         ->searchable()
+                        
                         ->indicator('Proyek'),
-                    SelectFilter::make('devisi')
-                        ->label('Filter By Devisi')
-                        ->options([
-                            'pgmt' => 'PGMT',
-                            'hvac' => 'HVAC',
-                            'qa.qc' => 'QA/QC',
-                            'piping' => 'Piping',
-                            'scaffolder' => 'Scaffolder',
-                            'structure' => 'Structure',
-                            'architectural' => 'Architectural',
-                            'civil' => 'Civil',
-                        ])
-                        ->indicator('Devisi'),
+                   
                 ])
                     ->actions([
                         Tables\Actions\EditAction::make()
@@ -147,9 +139,9 @@ class ManpowerDlResource extends Resource
                     ])
                     ->headerActions([
                     
-                        ImportAction::make() // Konfigurasi ImportAction
-                            ->importer(ManpowerdlImporter::class)
-                            ->label('Import Data'),
+                        // ImportAction::make() // Konfigurasi ImportAction
+                        //     ->importer(ManpowerdlImporter::class)
+                        //     ->label('Import Data'),
                       // Tables\Actions\CreateAction::make(),---
                     ])
                     ->bulkActions([

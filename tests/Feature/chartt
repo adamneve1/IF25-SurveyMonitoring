@@ -1,0 +1,192 @@
+<?php
+
+namespace Tests\Feature\Filament\Widgets;
+
+use App\Filament\Widgets\ManhourChart;
+use App\Models\Divisi;
+use App\Models\Manhour;
+use App\Models\ManpowerIdl;
+use App\Models\Proyek;
+use App\Models\ProyekPlan;
+use Carbon\Carbon;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
+use Tests\TestCase;
+
+class ManhourChartWidgetTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected Proyek $proyek;
+    protected Divisi $divisiA;
+    protected Divisi $divisiB;
+
+    /**
+     * Setup the test environment.
+     *
+     * @return void
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Membuat data dasar yang akan digunakan di banyak tes
+        $this->proyek = Proyek::factory()->create([
+            'nama_proyek' => 'Proyek Alpha',
+            'tanggal_mulai' => '2024-01-01',
+            'estimasi_selesai' => '2025-12-31',
+        ]);
+
+        // --- FIX: Mengubah 'nama_divisi' menjadi 'name' ---
+        // Menyesuaikan dengan nama kolom yang benar di skema database Anda.
+        $this->divisiA = Divisi::factory()->create(['name' => 'Engineering']);
+        $this->divisiB = Divisi::factory()->create(['name' => 'Produksi']);
+    }
+
+    /** @test */
+    public function it_shows_a_message_to_select_a_project_when_no_filter_is_applied()
+    {
+        // Menguji kondisi awal saat tidak ada filter proyek yang dipilih
+        Livewire::test(ManhourChart::class)
+            ->assertSet('heading', 'Pilih Proyek pada filter di atas.')
+            ->assertSet('data.datasets', [])
+            ->assertSet('data.labels', []);
+    }
+
+    /** @test */
+    public function it_renders_daily_data_correctly_when_filters_are_applied()
+    {
+        // 1. Arrange: Siapkan data spesifik untuk tes ini
+        $year = 2025;
+        $month = 7; // Juli
+
+        // Buat plan untuk bulan Juli 2025
+        ProyekPlan::factory()->create([
+            'proyek_id' => $this->proyek->id,
+            'tahun' => $year,
+            'bulan' => $month,
+            'jumlah_plan' => 200, // 200 jam plan
+        ]);
+
+        // Buat realisasi manhour pada bulan Juli 2025
+        Manhour::factory()->create([
+            'proyek_id' => $this->proyek->id,
+            'tanggal' => Carbon::create($year, $month, 10),
+            'overtime' => 8,
+        ]);
+        Manhour::factory()->create([
+            'proyek_id' => $this->proyek->id,
+            'tanggal' => Carbon::create($year, $month, 15),
+            'overtime' => 12,
+        ]);
+
+        // 2. Act & 3. Assert: Muat komponen dengan filter dan verifikasi outputnya
+        Livewire::test(ManhourChart::class, [
+            'filters' => [
+                'proyek_id' => $this->proyek->id,
+                'view_mode' => 'daily', // Mode harian
+                'year' => $year,
+                'month' => $month,
+            ],
+        ])
+            ->assertSet('heading', 'Progres Harian: Proyek Alpha - July 2025')
+            ->assertSet('description', '✅ Status: Sesuai Target (Hemat 180 Jam) (Plan: 200 Jam) | Total Realisasi: 20 Jam')
+            ->assertCount('data.labels', 31) // Juli punya 31 hari
+            ->assertSet('data.datasets.0.label', 'Manhour Harian') // Bar chart harian
+            ->assertSet('data.datasets.0.data.9', 8)   // Data hari ke-10 (index 9)
+            ->assertSet('data.datasets.0.data.14', 12) // Data hari ke-15 (index 14)
+            ->assertSet('data.datasets.1.label', 'Realisasi (Akumulatif)') // Line chart akumulatif
+            ->assertSet('data.datasets.1.data.9', 8)    // Akumulatif di hari ke-10
+            ->assertSet('data.datasets.1.data.14', 20); // Akumulatif di hari ke-15 (8 + 12)
+    }
+
+    /** @test */
+    public function it_renders_monthly_data_correctly()
+    {
+        // 1. Arrange
+        $year = 2025;
+        ProyekPlan::factory()->create(['proyek_id' => $this->proyek->id, 'tahun' => $year, 'bulan' => 1, 'jumlah_plan' => 100]);
+        ProyekPlan::factory()->create(['proyek_id' => $this->proyek->id, 'tahun' => $year, 'bulan' => 2, 'jumlah_plan' => 150]);
+
+        Manhour::factory()->create(['proyek_id' => $this->proyek->id, 'tanggal' => "{$year}-01-10", 'overtime' => 50]);
+        Manhour::factory()->create(['proyek_id' => $this->proyek->id, 'tanggal' => "{$year}-01-20", 'overtime' => 30]); // Total Jan: 80
+        Manhour::factory()->create(['proyek_id' => $this->proyek->id, 'tanggal' => "{$year}-02-15", 'overtime' => 160]); // Total Feb: 160
+
+        // 2. Act & 3. Assert
+        Livewire::test(ManhourChart::class, [
+            'filters' => [
+                'proyek_id' => $this->proyek->id,
+                'view_mode' => 'monthly', // Mode bulanan
+                'year' => $year,
+            ],
+        ])
+            ->assertSet('heading', 'Rekap Bulanan: Proyek Alpha - Tahun 2025')
+            ->assertSet('description', 'Total Realisasi: 240 Jam | Total Plan: 250 Jam')
+            ->assertSet('data.labels', ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+            ->assertSet('data.datasets.0.data', [80, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]) // Realisasi
+            ->assertSet('data.datasets.1.data', [100, 150, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]); // Plan
+    }
+
+    /** @test */
+    public function it_renders_yearly_data_correctly()
+    {
+        // 1. Arrange
+        ProyekPlan::factory()->create(['proyek_id' => $this->proyek->id, 'tahun' => 2024, 'bulan' => 1, 'jumlah_plan' => 1000]);
+        ProyekPlan::factory()->create(['proyek_id' => $this->proyek->id, 'tahun' => 2025, 'bulan' => 1, 'jumlah_plan' => 1200]);
+
+        Manhour::factory()->create(['proyek_id' => $this->proyek->id, 'tanggal' => '2024-05-15', 'overtime' => 800]);
+        Manhour::factory()->create(['proyek_id' => $this->proyek->id, 'tanggal' => '2025-08-20', 'overtime' => 1300]);
+
+        // 2. Act & 3. Assert
+        Livewire::test(ManhourChart::class, [
+            'filters' => [
+                'proyek_id' => $this->proyek->id,
+                'view_mode' => 'yearly', // Mode tahunan
+            ],
+        ])
+            ->assertSet('heading', 'Rekap Tahunan Manhour: Proyek Alpha')
+            ->assertSet('description', 'Total Realisasi Proyek: 2100 Jam | Total Plan Proyek: 2200 Jam')
+            ->assertSet('data.labels', [2024, 2025])
+            ->assertSet('data.datasets.0.data', [800, 1300]) // Realisasi
+            ->assertSet('data.datasets.1.data', [1000, 1200]); // Plan
+    }
+
+    /** @test */
+    public function it_filters_data_by_division_correctly()
+    {
+        // 1. Arrange: Buat manpower dan manhour untuk dua divisi berbeda
+        $manpowerA = ManpowerIdl::factory()->create(['divisi_id' => $this->divisiA->id]);
+        $manpowerB = ManpowerIdl::factory()->create(['divisi_id' => $this->divisiB->id]);
+
+        // Realisasi untuk Divisi A
+        Manhour::factory()->create([
+            'proyek_id' => $this->proyek->id,
+            'manpower_idl_id' => $manpowerA->id,
+            'tanggal' => '2025-01-10',
+            'overtime' => 40,
+        ]);
+
+        // Realisasi untuk Divisi B
+        Manhour::factory()->create([
+            'proyek_id' => $this->proyek->id,
+            'manpower_idl_id' => $manpowerB->id,
+            'tanggal' => '2025-01-15',
+            'overtime' => 60,
+        ]);
+
+        // Plan untuk bulan tersebut
+        ProyekPlan::factory()->create(['proyek_id' => $this->proyek->id, 'tahun' => 2025, 'bulan' => 1, 'jumlah_plan' => 100]);
+
+        // 2. Act & 3. Assert: Uji dengan filter divisi
+        Livewire::test(ManhourChart::class, [
+            'filters' => [
+                'proyek_id' => $this->proyek->id,
+                'view_mode' => 'monthly',
+                'year' => 2025,
+                'divisi_id' => $this->divisiA->id, // Filter hanya untuk Divisi A
+            ],
+        ])
+            ->assertSet('description', 'Total Realisasi: 40 Jam | Total Plan: 100 Jam')
+            ->assertSet('data.datasets.0.data.0', 40); // Pastikan data bulan Jan (index 0) hanya 40, bukan 100 (40+60)
+    }
+}
